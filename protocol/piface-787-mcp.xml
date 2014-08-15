@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<PropertyList>
+<generic>
+   <output>
+      <line_separator>#</line_separator>
+      <var_separator>|</var_separator>
+ 
+      <chunk>
+         <name>autopilot-on</name>
+         <node>/instrumentation/flightdirector/autopilot-on</node>
+         <type>int</type>
+         <format>%d</format>
+       </chunk>
+ 
+
+      <chunk>
+         <name>autothrottle</name>
+         <node>/instrumentation/flightdirector/at-on</node>
+         <type>int</type>
+         <format>%d</format>
+       </chunk>
+
+      <chunk>
+         <name>vnav</name>
+         <node>/instrumentation/flightdirector/vnav</node>
+         <type>int</type>
+         <format>%d</format>
+       </chunk>
+	   
+	   
+	   <chunk>
+         <name>lnav</name>
+         <node>/instrumentation/flightdirector/lnav</node>
+         <type>int</type>
+         <format>%d</format>
+       </chunk>
+	   
+	   
+	   
+	   
+   </output>
+</generic>
+</PropertyList>
