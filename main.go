@@ -14,6 +14,18 @@ import (
 )
 
 const (
+	L_AP = 0
+	L_AT = 1
+	L_LNAV = 2 
+	L_VNAV = 3
+	L_HDG_HOLD = 4
+	L_VS = 5
+	L_ALT_HOLD = 6
+	L_APP = 7
+
+)
+
+const (
 	LOW = 0
 	HIGHT = 1
 )
@@ -21,15 +33,17 @@ const (
 type AP_Packet struct {
 	Ap int `json:"ap"`
 	At int `json:"at"`
-	Lnav int `json:"lnav"`
-	Vnav int `json:"vnav"`
+	LNav int `json:"lnav"`
+	VNav int `json:"vnav"`
 }
+
+var Board *piface.PiFaceDigital
 
 func main() {
 
-      	board := piface.NewPiFaceDigital(spi.DEFAULT_HARDWARE_ADDR, spi.DEFAULT_BUS, spi.DEFAULT_CHIP)
+      	Board = piface.NewPiFaceDigital(spi.DEFAULT_HARDWARE_ADDR, spi.DEFAULT_BUS, spi.DEFAULT_CHIP)
 
-	err := board.InitBoard()
+	err := Board.InitBoard()
 	if err != nil {
 		fmt.Println("error initialising board")
 		return
@@ -82,16 +96,14 @@ func main() {
 					fmt.Println("decode err:", err_decode)
 				} else {
 	                                fmt.Println("from address", address, "got message:", string(buf[0:n]), n, packet)
-					if packet.Ap == 1 {
-						board.Leds[0].SetValue(1)
-					} else {
-						board.Leds[0].SetValue(0)
-					}
-					if packet.At == 1 {
-						board.Leds[1].SetValue(1)
-					} else {
-						board.Leds[1].SetValue(0)
-					}
+				
+					SetLed(L_AP, packet.Ap == 1)
+					SetLed(L_AT, packet.At == 1)
+
+					SetLed(L_HDG_HOLD, packet.LNav == 1)
+					
+					SetLed(L_VS, packet.VNav == 2)
+					SetLed(L_ALT_HOLD, packet.VNav == 1)
 				}
                         }
                 }
@@ -100,3 +112,12 @@ func main() {
  
 
 }
+
+func SetLed(no int, state bool){
+	if state {	
+		Board.Leds[no].SetValue(1)
+	} else {
+		Board.Leds[no].SetValue(0)
+	}
+
+} 
