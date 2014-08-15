@@ -63,6 +63,8 @@ func main() {
 
                         if n > 0 {
                                 fmt.Println("from address", address, "got message:", string(buf[0:n]), n)
+				//raw_data := string(buf[0:n])
+				//data = string.
                         }
                 }
                 c += 1
