@@ -7,13 +7,21 @@ import (
 	"fmt"
 	"net"
 	//"time"
+	"github.com/luismesas/goPi/piface"
+	"github.com/luismesas/goPi/spi"
 )
 
 func main() {
 
-      
+      	board := piface.NewPiFaceDigital(spi.DEFAULT_HARDWARE_ADDR, spi.DEFAULT_BUS, spi.DEFAULT_CHIP)
 
-        port := "127.0.0.1:4567"
+	err := board.InitBoard()
+	if err != nil {
+		fmt.Println("error initialising board")
+		return
+
+	}
+        port := "0.0.0.0:45670"
 
         udpAddress, err := net.ResolveUDPAddr("udp", port)
 
@@ -30,7 +38,7 @@ func main() {
                 fmt.Println(err)
                 return
         }
-
+	fmt.Println("linstening")
         defer conn.Close()
 
 		//var buf []byte
@@ -51,7 +59,7 @@ func main() {
 
                 if address != nil {
 
-                        fmt.Println(">", c, address, " with n = ", n, string(buf[0:n]))
+                        //fmt.Println(">", c, address, " with n = ", n, string(buf[0:n]))
 
                         if n > 0 {
                                 fmt.Println("from address", address, "got message:", string(buf[0:n]), n)

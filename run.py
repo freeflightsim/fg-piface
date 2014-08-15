@@ -45,7 +45,7 @@ def run_client():
 	while True:
 		data, addr = sock.recvfrom(1024)
 		
-		if c % 100 == 0:
+		if c % 10000 == 0:
 			print "=", addr, data
 		parts = data.replace("#", "").split("|")
 		
@@ -80,14 +80,16 @@ def cleanup():
 
 listener.activate()
 
-run_client()
-"""
+#run_client()
+
+#listener.deactivate()
+
 try:
-	thread.start_new_thread(run_client, ())
-	#run_client()
+	#thread.start_new_thread(run_client, ())
+	run_client()
 except Exception, e:
 	print e
-"""
+
 """
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, cleanup)
