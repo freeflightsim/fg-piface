@@ -80,12 +80,14 @@ def cleanup():
 
 listener.activate()
 
+run_client()
+"""
 try:
 	thread.start_new_thread(run_client, ())
 	#run_client()
 except Exception, e:
 	print e
-
+"""
 """
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, cleanup)
