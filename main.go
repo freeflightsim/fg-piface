@@ -7,9 +7,18 @@ import (
 	"fmt"
 	"net"
 	//"time"
+	"encoding/json"
 	"github.com/luismesas/goPi/piface"
 	"github.com/luismesas/goPi/spi"
+
 )
+
+type AP_Packet struct {
+	Ap int `json:"ap"`
+	At int `json:"at"`
+	Lnav int `json:"lnav"`
+	Vnav int `json:"vnav"`
+}
 
 func main() {
 
@@ -45,6 +54,7 @@ func main() {
 		buf := make([]byte, 1024)
 
 		c := 0
+	var packet AP_Packet
         for {
 
                // time.Sleep(100 * time.Millisecond)
@@ -62,9 +72,14 @@ func main() {
                         //fmt.Println(">", c, address, " with n = ", n, string(buf[0:n]))
 
                         if n > 0 {
-                                fmt.Println("from address", address, "got message:", string(buf[0:n]), n)
+				err_decode := json.Unmarshal(buf[0:n], &packet)
+				if err_decode != nil {
+					fmt.Println("decode err:", err_decode)
+				} else {
+	                                fmt.Println("from address", address, "got message:", string(buf[0:n]), n, packet)
 				//raw_data := string(buf[0:n])
 				//data = string.
+				}
                         }
                 }
                 c += 1
