@@ -13,6 +13,11 @@ import (
 
 )
 
+const (
+	LOW = 0
+	HIGHT = 1
+)
+
 type AP_Packet struct {
 	Ap int `json:"ap"`
 	At int `json:"at"`
@@ -62,7 +67,7 @@ func main() {
                 n, address, err := conn.ReadFromUDP(buf)
 
                 if err != nil {
-                        fmt.Println("error reading data from connection")
+                        fmt.Println("error reading data from connection", err)
                         fmt.Println(err)
                         return
                 }
@@ -77,8 +82,16 @@ func main() {
 					fmt.Println("decode err:", err_decode)
 				} else {
 	                                fmt.Println("from address", address, "got message:", string(buf[0:n]), n, packet)
-				//raw_data := string(buf[0:n])
-				//data = string.
+					if packet.Ap == 1 {
+						board.Leds[0].SetValue(1)
+					} else {
+						board.Leds[0].SetValue(0)
+					}
+					if packet.At == 1 {
+						board.Leds[1].SetValue(1)
+					} else {
+						board.Leds[1].SetValue(0)
+					}
 				}
                         }
                 }
