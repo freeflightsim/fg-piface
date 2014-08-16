@@ -2,8 +2,10 @@
 import socket
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind( ("0.0.0.0", 4567) )
+sock.bind( ("0.0.0.0", 45670) )
 
+c = 0
 while True:
+	c += 1
 	data, addr = sock.recvfrom(1024)
-	print "=", addr, data
+	print "=",  c, data

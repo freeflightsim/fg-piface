@@ -1,15 +1,26 @@
 <?xml version="1.0"?>
+<!-- This outputs
+
+0|0|0|0#
+where
+- autopilot engaged [0, 1]
+- autothrottle engaged [0,1]
+- lnav mode 
+- vnav mode (0, 1 or 5)
+-->
+
 <PropertyList>
 <generic>
    <output>
-      <line_separator>#</line_separator>
-      <var_separator>|</var_separator>
- 
+	   
+      <line_separator></line_separator>
+      <var_separator>,</var_separator>
+
       <chunk>
          <name>autopilot-on</name>
          <node>/instrumentation/flightdirector/autopilot-on</node>
          <type>int</type>
-         <format>%d</format>
+         <format>{"ap":%d</format>
        </chunk>
  
 
@@ -17,25 +28,22 @@
          <name>autothrottle</name>
          <node>/instrumentation/flightdirector/at-on</node>
          <type>int</type>
-         <format>%d</format>
+         <format>"at":%d</format>
        </chunk>
 
-      <chunk>
-         <name>vnav</name>
-         <node>/instrumentation/flightdirector/vnav</node>
-         <type>int</type>
-         <format>%d</format>
-       </chunk>
-	   
-	   
 	   <chunk>
          <name>lnav</name>
          <node>/instrumentation/flightdirector/lnav</node>
          <type>int</type>
-         <format>%d</format>
+         <format>"lnav":%d</format>
        </chunk>
 	   
-	   
+      <chunk>
+         <name>vnav</name>
+         <node>/instrumentation/flightdirector/vnav</node>
+         <type>int</type>
+         <format>"vnav":%d}</format>
+       </chunk>
 	   
 	   
    </output>
