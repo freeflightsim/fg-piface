@@ -1,7 +1,7 @@
 fg-piface
 =========
 
-FlightGear interface to PiFace
+FlightGear knobs and buttons with PiFace
 
 
 * The app is written in golang.. 

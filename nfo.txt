@@ -1,0 +1,17 @@
+that's all brand new stuff, so documentation is sparse or better not yet there.
+Best way to get startet is starting the embedded httpd using --httpd=8080
+A good entry point is http://localhost:8080/gui which I try to keep up to date with at least links to the latest additions.
+
+Everything you have in your head should be doable, actually the new interface was made for exactly that purpose and to be device and operating system independent by using web standards (http/hmtl5/css/js).
+There is a service providing access to the property tree:
+http://localhost:8080/json/  --> writes out JSON
+http://localhost:8080/props/ web forms access to the property tree
+http://localhost:8080/run.cgi?value=command --> fire fg internal commands (aka "bindings" in joystick/animation files)
+A Websocket for real-time notification of property changes
+I have started to code JavaScript wrappers to hide some of the complexity, props.js is a good example. Look at the maps source code (webgui/map/index.html) so see how easy it is to add  listeners.
+
+Check out http://localhost:8080/gui/instruments/kingradio.html as an example of a (partial) king radio stack and look at the source files how this is done. It uses the listeners and run.cgi. This is plain HTML/CSS/JS, no jpeg, no magic involved.
+Screenshot: https://www.dropbox.com/s/ugzdeqokhn9uknp/kingradio.jpg
+
+I have written up some easy examples in $FGDATA/webgui - check them out to see how all this works.
+I'll add some documentation to the wiki soon.
