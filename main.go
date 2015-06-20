@@ -26,8 +26,8 @@ type Message struct {
 func main() {
 
 
-	origin := "http://localhost:7777/"
-	url := "ws://localhost:7777/PropertyListener"
+	origin := "http://192.168.50.153:7777/"
+	url := "ws://192.168.50.153:7777/PropertyListener"
 	ws, err := websocket.Dial(url, "", origin)
 	if err != nil {
 		//log.Fatal(err)
