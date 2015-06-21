@@ -4,12 +4,14 @@ package main
 
 import (
 	//"os"
-	"fmt"
+	//"fmt"
 	//"net"
 	//"time"
-	"encoding/json"
+	//"encoding/json"
 	//"log"
-	"golang.org/x/net/websocket"
+	//"golang.org/x/net/websocket"
+
+	"github.com/freeflightsim/fg-piface/fgio"
 
 )
 
@@ -25,15 +27,14 @@ type Message struct {
 
 func main() {
 
+	bot := fgio.NewClient("192.168.50.153", "7777")
 
-	origin := "http://192.168.50.153:7777/"
-	url := "ws://192.168.50.153:7777/PropertyListener"
-	ws, err := websocket.Dial(url, "", origin)
-	if err != nil {
-		//log.Fatal(err)
-		fmt.Println("fatal", err)
-		return
-	}
+	bot.AddListener("/autopilot/settings/target-altitude-ft")
+	bot.Start()
+
+
+
+	/*
 
 	m := Message{Cmd: "addListener", Node: "/autopilot/settings/target-altitude-ft"}
 	bits, err := json.Marshal(m)
@@ -53,9 +54,7 @@ func main() {
 			fmt.Println("rcv", string(msg[:n]))
 		}
 	}
-
-
-
+	*/
 }
 
 
