@@ -50,8 +50,10 @@ func main() {
 			board.SetOutput(5, state)
 			board.SetOutput(7, state)
 			board.SetOutput(8, state)
+
 		case butt := <- board.ButtChan:
 			fmt.Println(" BUtt = ", butt)
+			bot.SendValue("/autopilot/locks/heading", "fg-heading-hold")
 		}
 	}
 

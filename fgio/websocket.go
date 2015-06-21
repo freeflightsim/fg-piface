@@ -94,13 +94,19 @@ func (me *Client) Connect() error {
 	//fmt.Println("ssssssss", me.Nodes)
 	for _, n := range me.Nodes {
 		fmt.Println("addNode", n)
-		comm := Command{"addListener", n}
-		me.SendMessage(comm)
+		comm := Command{"addListener", n, ""}
+		me.SendCommand(comm)
 	}
 
 	return nil
 }
-func (me *Client) SendMessage(comm Command) error {
+
+func (me *Client) SendValue(node string, value string) {
+	comm := Command{"set", node, value}
+	me.SendCommand(comm)
+}
+
+func (me *Client) SendCommand(comm Command) error {
 	bits, err := json.Marshal(comm)
 	if err != nil {
 		fmt.Println("jsonerror", err)

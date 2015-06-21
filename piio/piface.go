@@ -1,39 +1,22 @@
 
 
+
 package piio
 
 import (
 	//"os"
 	"fmt"
-	
-        "time"
+
+	"time"
 
 	"github.com/luismesas/goPi/piface"
 	"github.com/luismesas/goPi/spi"
-
-)
-
-const (
-	L_AP = 0
-	L_AT = 1
-	L_LNAV = 2
-	L_VNAV = 3
-	L_HDG_HOLD = 4
-	L_VS = 5
-	L_ALT_HOLD = 6
-	L_APP = 7
-
-)
-
-const (
-	LOW = 0
-	HIGHT = 1
 )
 
 type Board struct {
-	Pfd *piface.PiFaceDigital
+	Pfd      *piface.PiFaceDigital
 	ButtChan chan Button
-	States map[int]bool
+	States   map[int]bool
 }
 
 func NewPifaceBoard() *Board {
@@ -65,23 +48,20 @@ func (me *Board) ScanButtons() {
 		//fmt.Println(now)
 		for i := 0; i < 8; i++ {
 			v := me.Pfd.InputPins[i].Value() == 1
-			if v == true && me.States[i] == false{
-                            // button pressed, but not previous
-			    me.States[i] = true	
-                            b := Button{i, true}
-                            me.ButtChan <- b
-                        } else if v == false && me.States[i] == true {
-			    me.States[i] = false
-                            //me.ButtChan <- Button{i, false}
+			if v == true && me.States[i] == false {
+				// button pressed, but not previous
+				me.States[i] = true
+				b := Button{i, true}
+				me.ButtChan <- b
+			} else if v == false && me.States[i] == true {
+				me.States[i] = false
+				//me.ButtChan <- Button{i, false}
 
 			}
 			//fmt.Println(i, v, v)
 		}
-		if false {
-		     
-		}
-       }
 
+	}
 
 }
 
