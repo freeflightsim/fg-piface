@@ -5,8 +5,8 @@ package piio
 import (
 	//"os"
 	"fmt"
-
-	//"time"
+	
+        "time"
 
 	"github.com/luismesas/goPi/piface"
 	"github.com/luismesas/goPi/spi"
@@ -60,10 +60,27 @@ func (me *Board) Init() error {
 
 func (me *Board) ScanButtons() {
 	fmt.Println("Board ScanButtons()")
-	for i := 0; i < 8; i++ {
-		v := me.Pfd.InputPins[i]
-		fmt.Println(i, v)
-	}
+	t := time.Tick(100 * time.Millisecond)
+	for _ = range t {
+		//fmt.Println(now)
+		for i := 0; i < 8; i++ {
+			v := me.Pfd.InputPins[i].Value() == 1
+			if v == true && me.States[i] == false{
+                            // button pressed, but not previous
+			    me.States[i] = true	
+                            b := Button{i, true}
+                            me.ButtChan <- b
+                        } else if v == false && me.States[i] == true {
+			    me.States[i] = false
+                            //me.ButtChan <- Button{i, false}
+
+			}
+			//fmt.Println(i, v, v)
+		}
+		if false {
+		     
+		}
+       }
 
 
 }
