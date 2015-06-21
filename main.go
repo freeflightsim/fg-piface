@@ -12,6 +12,7 @@ import (
 	//"golang.org/x/net/websocket"
 
 	"github.com/freeflightsim/fg-piface/fgio"
+	"github.com/freeflightsim/fg-piface/piio"
 
 )
 
@@ -23,6 +24,8 @@ import (
 
 func main() {
 
+	board := piio.NewPifaceBoard()
+	board.Init()
 
 
 	bot := fgio.NewClient("192.168.50.153", "7777")
@@ -31,6 +34,9 @@ func main() {
 	bot.AddListener("/autopilot/locks/altitude")
 	bot.AddListener("/autopilot/locks/heading")
 
+
+
+
 	go bot.Start()
 
 
@@ -38,6 +44,7 @@ func main() {
 		select {
 		case msg := <-bot.MessChan:
 			fmt.Println(" GOT = ", msg)
+			board.SetOutput(0, true)
 		}
 	}
 
