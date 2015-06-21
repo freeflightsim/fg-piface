@@ -46,6 +46,10 @@ func main() {
 			fmt.Println(" GOT = ", msg)
 			state = !state
 			board.SetOutput(0, state)
+			board.SetOutput(2, state)
+			board.SetOutput(5, state)
+			board.SetOutput(7, state)
+			board.SetOutput(8, state)
 		}
 	}
 

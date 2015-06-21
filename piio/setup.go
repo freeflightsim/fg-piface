@@ -31,20 +31,20 @@ const (
 )
 
 type Board struct {
-	Piface *piface.PiFaceDigital
+	Pfd *piface.PiFaceDigital
 }
 
 func NewPifaceBoard() *Board {
 	b := new(Board)
-	b.Piface = piface.NewPiFaceDigital(spi.DEFAULT_HARDWARE_ADDR, spi.DEFAULT_BUS, spi.DEFAULT_CHIP)
+	b.Pfd = piface.NewPiFaceDigital(spi.DEFAULT_HARDWARE_ADDR, spi.DEFAULT_BUS, spi.DEFAULT_CHIP)
 	return b
 }
 
 func (me *Board) Init() error {
 
-	err := me.Piface.InitBoard()
+	err := me.Pfd.InitBoard()
 	if err != nil {
-		fmt.Println("error initialising board")
+		fmt.Println("error initialising board", err)
 		return err
 	}
 	return nil
@@ -52,9 +52,9 @@ func (me *Board) Init() error {
 
 func (me *Board) SetOutput(no int, state bool) {
 	if state {
-		me.Piface.Leds[no].SetValue(1)
+		me.Pfd.Leds[no].SetValue(1)
 	} else {
-		me.Piface.Leds[no].SetValue(0)
+		me.Pfd.Leds[no].SetValue(0)
 	}
 
 }
