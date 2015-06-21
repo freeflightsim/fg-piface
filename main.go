@@ -4,7 +4,7 @@ package main
 
 import (
 	//"os"
-	//"fmt"
+	"fmt"
 	//"net"
 	//"time"
 	//"encoding/json"
@@ -15,10 +15,6 @@ import (
 
 )
 
-type Message struct {
-	Cmd string ` json:"command" `
-	Node string ` json:"node" `
-}
 
 //{"command":"get","node":"/instrumentation/comm/station-name"}
 //{"command":"get","node":"/instrumentation/comm[1]/frequencies/selected-mhz"}
@@ -27,12 +23,23 @@ type Message struct {
 
 func main() {
 
+
+
 	bot := fgio.NewClient("192.168.50.153", "7777")
 
 	bot.AddListener("/autopilot/settings/target-altitude-ft")
-	bot.Start()
+	bot.AddListener("/autopilot/settings/heading-bug-deg")
+	bot.AddListener("/autopilot/settings/icao-aircraft-category")
+
+	go bot.Start()
 
 
+	for {
+		select {
+		case msg := <-bot.MessChan:
+			fmt.Println(" GOT = ", msg)
+		}
+	}
 
 	/*
 
