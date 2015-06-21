@@ -32,22 +32,40 @@ const (
 
 type Board struct {
 	Pfd *piface.PiFaceDigital
+	ButtChan chan Button
+	States map[int]bool
 }
 
 func NewPifaceBoard() *Board {
 	b := new(Board)
 	b.Pfd = piface.NewPiFaceDigital(spi.DEFAULT_HARDWARE_ADDR, spi.DEFAULT_BUS, spi.DEFAULT_CHIP)
+	b.ButtChan = make(chan Button)
+	b.States = make(map[int]bool)
+	for i := 0; i < 8; i++ {
+		b.States[i] = false
+	}
 	return b
 }
 
 func (me *Board) Init() error {
-
+	fmt.Println("Board init()")
 	err := me.Pfd.InitBoard()
 	if err != nil {
 		fmt.Println("error initialising board", err)
 		return err
 	}
+	go me.ScanButtons()
 	return nil
+}
+
+func (me *Board) ScanButtons() {
+	fmt.Println("Board ScanButtons()")
+	for i := 0; i < 8; i++ {
+		v := me.Pfd.InputPins[i]
+		fmt.Println(i, v)
+	}
+
+
 }
 
 func (me *Board) SetOutput(no int, state bool) {
