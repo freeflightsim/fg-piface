@@ -39,12 +39,13 @@ func main() {
 
 	go bot.Start()
 
-
+	state := false
 	for {
 		select {
 		case msg := <-bot.MessChan:
 			fmt.Println(" GOT = ", msg)
-			board.SetOutput(0, true)
+			state = !state
+			board.SetOutput(0, state)
 		}
 	}
 
