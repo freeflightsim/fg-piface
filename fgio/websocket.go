@@ -15,6 +15,7 @@ type Client struct {
 	Ws *websocket.Conn
 	Nodes []string
 	MessChan chan map[string]interface{}
+	//ConnectChan chan bool
 }
 
 func (me *Client) AddListener(node string){
@@ -52,14 +53,14 @@ func (me *Client) Listen(){
 		} else {
 			//#fmt.Printf("Received: %s.\n", msg[:n])
 
-			fmt.Println("rcv", string(bits[:n]))
+			//fmt.Println("rcv", string(bits[:n]))
 			err := json.Unmarshal(bits[:n], &m)
 			if err != nil {
 				fmt.Println("decode error", err)
 			} else {
 				me.MessChan <- m
 			}
-			fmt.Println(m)
+			//fmt.Println(m)
 		}
 	}
 }
@@ -69,6 +70,13 @@ func (me *Client) Listen(){
 //url := "ws://192.168.50.153:7777/PropertyListener"
 
 func (me *Client) Start() error {
+
+	me.Connect()
+
+	return nil
+}
+
+func (me *Client) Connect() error {
 
 	origin := "http://" + me.Host + ":" + me.Port
 	url := "ws://" + me.Host + ":" +  me.Port + "/PropertyListener"

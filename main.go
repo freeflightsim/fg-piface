@@ -27,9 +27,9 @@ func main() {
 
 	bot := fgio.NewClient("192.168.50.153", "7777")
 
-	bot.AddListener("/autopilot/settings/target-altitude-ft")
-	bot.AddListener("/autopilot/settings/heading-bug-deg")
-	bot.AddListener("/autopilot/settings/icao-aircraft-category")
+	//bot.AddListener("/autopilot/settings/target-altitude-ft")
+	bot.AddListener("/autopilot/locks/altitude")
+	bot.AddListener("/autopilot/locks/heading")
 
 	go bot.Start()
 
