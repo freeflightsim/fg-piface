@@ -19,7 +19,7 @@ type Client struct {
 
 	Nodes []string
 
-	MessChan chan Frame //chan map[string]interface{}
+	MessChan chan MessageFrame
 
 
 }
@@ -31,7 +31,7 @@ func NewClient(host string, port string) *Client{
 	c.Host = host
 	c.Port = port
 	c.Nodes = make([]string, 0)
-	c.MessChan = make(chan Frame) // make(chan map[string]interface{})
+	c.MessChan = make(chan MessageFrame)
 
 	return c
 }
@@ -51,7 +51,7 @@ func (me *Client) Listen(){
 	var n int
 	var err error
 	//var m map[string]interface{}
-	var fra Frame
+	var fra MessageFrame
 	for {
 		n, err = me.Ws.Read(bits)
 		if err != nil {
@@ -59,7 +59,7 @@ func (me *Client) Listen(){
 		} else {
 			//#fmt.Printf("Received: %s.\n", msg[:n])
 
-			fmt.Println("rcv", string(bits[:n]))
+			//fmt.Println("rcv", string(bits[:n]))
 			err := json.Unmarshal(bits[:n], &fra)
 			if err != nil {
 				fmt.Println("decode error", err)
@@ -100,7 +100,7 @@ func (me *Client) Connect() error {
 
 	//fmt.Println("ssssssss", me.Nodes)
 	for _, n := range me.Nodes {
-		fmt.Println("addNode", n)
+		//fmt.Println("addNode", n)
 		comm := NewAddListenerCmd(n)
 		me.SendCommand(comm)
 	}
@@ -120,10 +120,10 @@ func (me *Client) SendCommand(comm interface{}) error {
 		fmt.Println("jsonerror", err)
 		return err
 	}
-	fmt.Println("bits", string(bits))
+	//fmt.Println("bits", string(bits))
 	if _, err := me.Ws.Write(bits); err != nil {
 		//log.Fatal(err)
-		fmt.Println("written", err)
+		//fmt.Println("written", err)
 	}
 	return nil
 }

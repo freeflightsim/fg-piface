@@ -6,6 +6,13 @@ import (
 )
 
 
+//{"command":"get","node":"/instrumentation/comm/station-name"}
+//{"command":"get","node":"/instrumentation/comm[1]/frequencies/selected-mhz"}
+//{"command":"addListener","node":"/instrumentation/comm/station-name"}
+
+
+
+
 type AddListenerCommand struct {
 	Cmd string ` json:"command" `
 	Node string ` json:"node" `
@@ -16,6 +23,8 @@ func NewAddListenerCmd(node string) AddListenerCommand {
 	c := AddListenerCommand{Cmd: "addListener", Node: node}
 	return c
 }
+
+
 
 type RemoveListenerCommand struct {
 	Cmd string ` json:"command" `
@@ -36,11 +45,3 @@ type Command struct {
 }
 
 
-type Frame struct {
-	Node string ` json:"path" `
-	Name string ` json:"name" `
-	Type string ` json:"type" `
-	Index int ` json:"index" `
-	Value interface{} ` json:"value" `
-
-}

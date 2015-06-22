@@ -71,7 +71,7 @@ func (me *Board) ScanButtons() {
 
 func (me *Board) SetOutput(no int, state bool) {
 	if me.Enabled == false {
-		fmt.Println("SetOut", no, state)
+		//fmt.Println("      board -> SetOut", no, state)
 		return
 	}
 	if state {
