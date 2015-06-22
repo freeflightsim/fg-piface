@@ -3,24 +3,44 @@ model: 787
 
 leds:
     -   index: 7
-        node: /autopilot/enabled
-        on: dg-heading-hold
+        id: enabled
+        node: /instrumentation/flightdirector/autopilot-on
+        on: 1
 
-    -   index: 4
+    -   index: 6
+        id: auto_throttle
         node: /autopilot/locks/speed
         on: speed-with-throttle
 
-    -   index: 2
+    -   index: 5
+        id: lnav
+        node: /instrumentation/flightdirector/lnav
+        on: 1
+
+    -   index: 4
+        id: vnav
+        node: /instrumentation/flightdirector/lnav
+        on: 1
+
+    -   index: 4
+        id: heading_hold
         node: /autopilot/locks/heading
         on: dg-heading-hold
 
-    -   index: 1
+    -   index: 2
+        id: vs
         node: /autopilot/locks/altitude
         on: vertical-speed-hold
 
-    -   index: 0
+    -   index: 1
+        id: alt
         node: /autopilot/locks/altitude
         on: altitude-hold
+
+    -   index: 0
+        id: app
+        node: /autopilot/locks/heading
+        on: nav1-hold
 
 buttons:
     -   index: 0
