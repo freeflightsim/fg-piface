@@ -101,7 +101,7 @@ func (me *Client) Connect() error {
 	//fmt.Println("ssssssss", me.Nodes)
 	for _, n := range me.Nodes {
 		fmt.Println("addNode", n)
-		comm := Command{"addListener", n, ""}
+		comm := NewAddListenerCmd(n)
 		me.SendCommand(comm)
 	}
 
@@ -114,7 +114,7 @@ func (me *Client) SendValue(node string, value string) {
 }
 
 
-func (me *Client) SendCommand(comm Command) error {
+func (me *Client) SendCommand(comm interface{}) error {
 	bits, err := json.Marshal(comm)
 	if err != nil {
 		fmt.Println("jsonerror", err)

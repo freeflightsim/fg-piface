@@ -2,11 +2,11 @@
 model: 787
 
 leds:
-    -   index: 0
+    -   index: 7
         node: /autopilot/enabled
         on: dg-heading-hold
 
-    -   index: 1
+    -   index: 4
         node: /autopilot/locks/speed
         on: speed-with-throttle
 
@@ -14,11 +14,11 @@ leds:
         node: /autopilot/locks/heading
         on: dg-heading-hold
 
-    -   index: 3
+    -   index: 1
         node: /autopilot/locks/altitude
         on: vertical-speed-hold
 
-    -   index: 4
+    -   index: 0
         node: /autopilot/locks/altitude
         on: altitude-hold
 

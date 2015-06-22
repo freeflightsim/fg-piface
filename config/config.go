@@ -6,6 +6,7 @@ package config
 import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
+	"errors"
 )
 
 type Led struct {
@@ -41,6 +42,33 @@ func Load(file_path string) (*Config, error) {
 		conf.LedMap[led.Node] = led.Index
 	}
 	*/
+	err := conf.Validate()
+	if err != nil {
+		return conf, err
+	}
+
 	return conf, nil
 }
 
+
+func (me *Config) Validate() error {
+
+	exists := make(map[int]bool)
+	mess := ""
+
+	for _, led := range me.Leds {
+		if led.Index > 7 {
+			mess +=  "Led " + led.Node + " has index > 7\n"
+		}
+		_, found := exists[led.Index]
+		if found {
+			mess +=  "Led " + led.Node + " has duplicate index\n"
+		}
+		exists[led.Index] = true
+	}
+	if mess == "" {
+		return nil
+	}
+	return errors.New(mess)
+
+}
