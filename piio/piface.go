@@ -14,6 +14,7 @@ import (
 )
 
 type Board struct {
+	Enabled bool
 	Pfd      *piface.PiFaceDigital
 	ButtChan chan Button
 	States   map[int]bool
@@ -21,6 +22,7 @@ type Board struct {
 
 func NewPifaceBoard() *Board {
 	b := new(Board)
+	b.Enabled = false
 	b.Pfd = piface.NewPiFaceDigital(spi.DEFAULT_HARDWARE_ADDR, spi.DEFAULT_BUS, spi.DEFAULT_CHIP)
 	b.ButtChan = make(chan Button)
 	b.States = make(map[int]bool)
@@ -31,17 +33,19 @@ func NewPifaceBoard() *Board {
 }
 
 func (me *Board) Init() error {
-	fmt.Println("Board init()")
+	//fmt.Println("Board init()")
 	err := me.Pfd.InitBoard()
 	if err != nil {
 		fmt.Println("error initialising board", err)
 		return err
 	}
+	me.Enabled = true
 	go me.ScanButtons()
 	return nil
 }
 
 func (me *Board) ScanButtons() {
+	time.Sleep(2 * time.Second) // let things catch up
 	fmt.Println("Board ScanButtons()")
 	t := time.Tick(100 * time.Millisecond)
 	for _ = range t {
@@ -66,6 +70,10 @@ func (me *Board) ScanButtons() {
 }
 
 func (me *Board) SetOutput(no int, state bool) {
+	if me.Enabled == false {
+		fmt.Println("SetOut", no, state)
+		return
+	}
 	if state {
 		me.Pfd.Leds[no].SetValue(1)
 	} else {
