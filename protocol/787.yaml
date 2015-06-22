@@ -22,7 +22,7 @@ leds:
         node: /instrumentation/flightdirector/lnav
         on: 1
 
-    -   index: 4
+    -   index: 3
         id: heading_hold
         node: /autopilot/locks/heading
         on: dg-heading-hold
