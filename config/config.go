@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"errors"
+	"strings"
 )
 
 type Led struct {
@@ -15,6 +16,22 @@ type Led struct {
 	Node string 	` yaml:"node" `
 	On string 		` yaml:"on" `
 }
+
+func (me Led) IsOn(val string) bool {
+
+	if strings.Contains(me.On, ","){
+
+		for _, s := range strings.Split(me.On, ",") {
+			if s == val {
+				return true
+			}
+		}
+	} else if me.On == val {
+		return true
+	}
+	return false
+}
+
 
 type Config struct {
 	Model string 	` yaml:"model" `
