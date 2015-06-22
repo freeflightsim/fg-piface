@@ -19,7 +19,7 @@ leds:
 
     -   index: 4
         id: vnav
-        node: /instrumentation/flightdirector/lnav
+        node: /instrumentation/flightdirector/vnav
         on: 1
 
     -   index: 3
