@@ -1,48 +1,58 @@
 
 model: 787
 
-leds:
-    -   index: 7
+outputs:
+    -   pin: 7
         id: enabled
         node: /instrumentation/flightdirector/autopilot-on
         on: 1
 
-    -   index: 6
+    -   pin: 6
         id: at
         node: /instrumentation/flightdirector/at-on
         on: 1
 
-    -   index: 5
+    -   pin: 5
         id: lnav
         node: /instrumentation/flightdirector/lnav
         on: 3,5
 
-    -   index: 4
+    -   pin: 4
         id: vnav
         node: /instrumentation/flightdirector/vnav
         on: 1
 
-    -   index: 3
+    -   pin: 3
         id: heading_hold
         node: /instrumentation/flightdirector/lnav
         on: 1
 
-    -   index: 2
+    -   pin: 2
         id: vs
         node: /instrumentation/flightdirector/vnav
         on: 3
 
-    -   index: 1
+    -   pin: 1
         id: alt
         node: /instrumentation/flightdirector/vnav
         on: 2
 
-    -   index: 0
+    -   pin: 0
         id: app
         node: /autopilot/locks/heading
         on: nav1-hold
+        comment: this is also a v/lnav ?
 
-buttons:
-    -   index: 0
+inputs:
+    -   pin: 0
         node: /instrumentation/flightdirector/at-on
         send: 1
+
+    -   pin: 1
+        node: /instrumentation/flightdirector/vnav
+        send: 2
+
+    -   pin: 2
+        node: /instrumentation/flightdirector/vnav
+        send: 3
+

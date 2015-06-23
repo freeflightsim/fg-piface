@@ -7,37 +7,14 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"errors"
-	"strings"
+
 )
-
-type Led struct {
-	Index int 		` yaml:"index" `
-	Ignore bool 		` yaml:"ignore" `
-	Node string 	` yaml:"node" `
-	On string 		` yaml:"on" `
-}
-
-func (me Led) IsOn(val string) bool {
-	// TODO add >3 and comparison
-	if strings.Contains(me.On, ","){
-
-		for _, s := range strings.Split(me.On, ",") {
-			if s == val {
-				return true
-			}
-		}
-	} else if me.On == val {
-		return true
-	}
-	return false
-}
-
 
 
 type Config struct {
 	Model string 	` yaml:"model" `
-	Leds []Led		` yaml:"leds" `
-	//LedMap map[int]string
+	Inputs []InputPin	` yaml:"inputs" `
+	Outputs []OutputPin	` yaml:"outputs" `
 }
 
 func Load(file_path string) (*Config, error) {
@@ -74,15 +51,15 @@ func (me *Config) Validate() error {
 	exists := make(map[int]bool)
 	mess := ""
 
-	for _, led := range me.Leds {
-		if led.Index > 7 {
-			mess +=  "Led " + led.Node + " has index > 7\n"
+	for _, p := range me.Outputs {
+		if p.Pin > 7 {
+			mess +=  "OutPin " + p.Node + " has index > 7\n"
 		}
-		_, found := exists[led.Index]
+		_, found := exists[p.Pin]
 		if found {
-			mess +=  "Led " + led.Node + " has duplicate index\n"
+			mess +=  "OutPin " + p.Node + " has duplicate index\n"
 		}
-		exists[led.Index] = true
+		exists[p.Pin] = true
 	}
 	if mess == "" {
 		return nil
