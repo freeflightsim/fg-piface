@@ -24,18 +24,18 @@ leds:
 
     -   index: 3
         id: heading_hold
-        node: /autopilot/locks/heading
-        on: dg-heading-hold
+        node: /instrumentation/flightdirector/lnav
+        on: 1
 
     -   index: 2
         id: vs
-        node: /autopilot/locks/altitude
-        on: vertical-speed-hold
+        node: /instrumentation/flightdirector/vnav
+        on: 3
 
     -   index: 1
         id: alt
-        node: /autopilot/locks/altitude
-        on: altitude-hold
+        node: /instrumentation/flightdirector/vnav
+        on: 2
 
     -   index: 0
         id: app
