@@ -9,14 +9,17 @@ import (
 
 	"time"
 
+
 	"github.com/luismesas/goPi/piface"
 	"github.com/luismesas/goPi/spi"
+
+	"github.com/freeflightsim/fg-piface/config"
 )
 
 type Board struct {
 	Enabled bool
 	Pfd      *piface.PiFaceDigital
-	ButtChan chan Button
+	InputChan chan Button
 	States   map[int]bool
 }
 
@@ -24,7 +27,7 @@ func NewPifaceBoard() *Board {
 	b := new(Board)
 	b.Enabled = false
 	b.Pfd = piface.NewPiFaceDigital(spi.DEFAULT_HARDWARE_ADDR, spi.DEFAULT_BUS, spi.DEFAULT_CHIP)
-	b.ButtChan = make(chan Button)
+	b.InputChan = make(chan Button)
 	b.States = make(map[int]bool)
 	for i := 0; i < 8; i++ {
 		b.States[i] = false
@@ -44,9 +47,11 @@ func (me *Board) Init() error {
 	return nil
 }
 
+// Desperate hack in a go routine that scans buttons for changes
+// no interrupts yet from luis
 func (me *Board) ScanButtons() {
 	time.Sleep(2 * time.Second) // let things catch up
-	fmt.Println("Board ScanButtons()")
+	fmt.Println("Board ScanButtons Enabled()")
 	t := time.Tick(100 * time.Millisecond)
 	for _ = range t {
 		//fmt.Println(now)
@@ -56,7 +61,7 @@ func (me *Board) ScanButtons() {
 				// button pressed, but not previous
 				me.States[i] = true
 				b := Button{i, true}
-				me.ButtChan <- b
+				me.InputChan <- b
 			} else if v == false && me.States[i] == true {
 				me.States[i] = false
 				//me.ButtChan <- Button{i, false}
@@ -78,6 +83,32 @@ func (me *Board) SetOutput(no int, state bool) {
 		me.Pfd.Leds[no].SetValue(1)
 	} else {
 		me.Pfd.Leds[no].SetValue(0)
+	}
+
+}
+
+
+// fakes the input pins by sending messages randomly
+func (me *Board) PretendInputs(  inputs []config.InputPin) {
+
+	for _, inp := range inputs {
+
+		fmt.Println("inp=", inp)
+
+		tick := time.NewTicker(time.Duration(inp.Pin + 2) * time.Second)
+		go func(in_pin config.InputPin) {
+			var state bool
+			for {
+				select {
+				case <-tick.C:
+					fmt.Println("GO", tick, in_pin)
+					state = !state
+					me.InputChan <- Button{in_pin.Pin, state}
+				}
+			}
+		}(inp)
+
+
 	}
 
 }

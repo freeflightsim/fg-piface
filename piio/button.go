@@ -3,6 +3,6 @@
 package piio
 
 type Button struct {
-	Index int
+	Pin int
 	State bool
 }

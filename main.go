@@ -34,50 +34,40 @@ func main() {
 	// initialise the websocket client
 	client := fgio.NewClient("192.168.50.153", "7777")
 
-	for _, p := range conf.Outputs {
-		client.AddListener(p.Node)
-	}
+	//for _, p := range conf.Outputs {
+	//	client.AddListener(p.Node)
+	//}
+	client.UpdateNodes( conf.GetOutputNodes() )
 
 	go client.Start()
 
+	if board.Enabled == false {
+		board.PretendInputs( conf.Inputs )
+	}
+
 	// Loop around the messages from channels
-	state := false
+	//state := false
 	for {
 		select {
 
 		// Messages from the client
-		case msg := <- client.MessChan:
-			//if msg.Node ==  "/instrumentation/flightdirector/autopilot-on" {
-			//	fmt.Println(" GOT = ", msg.RawValue, reflect.TypeOf(msg.RawValue), msg.Type, msg.String())
-			//}
-			fmt.Printf("#%s#\n", msg.Node)
+		case msg := <- client.WsChan:
+			//fmt.Printf("#%s#\n", msg.Node)
 			for _, op := range conf.Outputs {
-
 
 				if op.Node == msg.Node {
 					//fmt.Println("        YES = ", led)
-					on := op.IsOn(msg.String())
-					//if msg.Node ==  "/instrumentation/flightdirector/autopilot-on" {
-					//	fmt.Println("        COMP = ", on, led.On, msg.String(), reflect.TypeOf(led.On), reflect.TypeOf(msg.String()))
-						//fmt.Println(" YES = ", on)
-						//fmt.Printf("#%s#\n", led.On)
-						//fmt.Printf("#%s#\n", msg.String())
-					//}
-					if on {
-						fmt.Printf("  #%s# ON\n", op.Node)
-					} else{
-						fmt.Printf("  #%s# --\n", op.Node)
-					}
+					on := op.IsOn( msg.String() )
 					board.SetOutput(op.Pin, on)
 
 				}
 			}
 
-			state = !state
+
 
 		// Buttons Pressed
-		case butt := <- board.ButtChan:
-			fmt.Println(" BUtt = ", butt)
+		case input := <- board.InputChan:
+			fmt.Println(" INNN = ", input)
 			client.SendValue("/autopilot/locks/heading", "fg-heading-hold")
 		}
 	}

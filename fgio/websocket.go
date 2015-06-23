@@ -12,14 +12,12 @@ import (
 type Client struct {
 
 	Host string
-
 	Port string
 
+	Nodes map[string]bool
+
 	Ws *websocket.Conn
-
-	Nodes []string
-
-	MessChan chan MessageFrame
+	WsChan chan MessageFrame
 
 
 }
@@ -30,17 +28,29 @@ func NewClient(host string, port string) *Client{
 	c := new(Client)
 	c.Host = host
 	c.Port = port
-	c.Nodes = make([]string, 0)
-	c.MessChan = make(chan MessageFrame)
+	c.Nodes = make(map[string]bool)
+	c.WsChan = make(chan MessageFrame)
 
 	return c
 }
 
+// Update nodes to listen on
+func (me *Client) UpdateNodes(nodes []string){
+
+	// first we make all current nodes, if any false
+	for k, _ := range me.Nodes {
+		me.Nodes[k] = false
+	}
+
+	// next we add the nodes
+	for _, n := range nodes {
+		me.AddListener(n)
+	}
+
+}
 
 func (me *Client) AddListener(node string){
-
-
-	me.Nodes = append(me.Nodes, node)
+	me.Nodes[node] = true
 	fmt.Println(" + AddListener", node)
 }
 
@@ -64,7 +74,7 @@ func (me *Client) Listen(){
 			if err != nil {
 				fmt.Println("decode error", err)
 			} else {
-				me.MessChan <- fra
+				me.WsChan <- fra
 			}
 			//fmt.Println(m)
 		}
@@ -99,9 +109,9 @@ func (me *Client) Connect() error {
 	go me.Listen()
 
 	//fmt.Println("ssssssss", me.Nodes)
-	for _, n := range me.Nodes {
+	for node, _ := range me.Nodes {
 		//fmt.Println("addNode", n)
-		comm := NewAddListenerCmd(n)
+		comm := NewAddListenerCmd(node)
 		me.SendCommand(comm)
 	}
 

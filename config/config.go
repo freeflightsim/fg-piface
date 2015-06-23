@@ -67,3 +67,39 @@ func (me *Config) Validate() error {
 	return errors.New(mess)
 
 }
+
+// Returns a list of unique output Nodes
+func (me *Config) GetOutputNodes() []string {
+
+	nodes := make(map[string]bool)
+	for _, p := range me.Outputs {
+		_, found := nodes[p.Node]
+		if found == false {
+			nodes[p.Node] = true
+		}
+	}
+	lst := make([]string, 0)
+	for n, _ := range nodes {
+		lst = append(lst, n)
+	}
+	return lst
+
+}
+
+// Returns a list of unique input Nodes
+func (me *Config) GetInputNodes() []string {
+
+	nodes := make(map[string]bool)
+	for _, p := range me.Inputs {
+		_, found := nodes[p.Node]
+		if found == false {
+			nodes[p.Node] = true
+		}
+	}
+	lst := make([]string, 0)
+	for n, _ := range nodes {
+		lst = append(lst, n)
+	}
+	return lst
+
+}
