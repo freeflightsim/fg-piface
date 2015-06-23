@@ -18,7 +18,7 @@ type Led struct {
 }
 
 func (me Led) IsOn(val string) bool {
-
+	// TODO add >3 and comparison
 	if strings.Contains(me.On, ","){
 
 		for _, s := range strings.Split(me.On, ",") {
@@ -31,6 +31,7 @@ func (me Led) IsOn(val string) bool {
 	}
 	return false
 }
+
 
 
 type Config struct {

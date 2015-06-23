@@ -8,14 +8,14 @@ leds:
         on: 1
 
     -   index: 6
-        id: auto_throttle
-        node: /autopilot/locks/speed
-        on: speed-with-throttle
+        id: at
+        node: /instrumentation/flightdirector/at-on
+        on: 1
 
     -   index: 5
         id: lnav
         node: /instrumentation/flightdirector/lnav
-        on: 5,3
+        on: 3,5
 
     -   index: 4
         id: vnav
@@ -44,5 +44,5 @@ leds:
 
 buttons:
     -   index: 0
-        node: /autopilot/locks/speed
-        send: speed-with-throttle
+        node: /instrumentation/flightdirector/at-on
+        send: 1
