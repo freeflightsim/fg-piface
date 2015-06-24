@@ -14,6 +14,7 @@ type InputPin struct {
 	Node string 	` yaml:"node" `
 	On string 		` yaml:"on" `
 	Off string 		` yaml:"off" `
+	Disabled bool    ` yaml:"disabled" `
 }
 
 

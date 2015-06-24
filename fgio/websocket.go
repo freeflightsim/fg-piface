@@ -47,6 +47,8 @@ func (me *Client) UpdateListeners(nodes []string){
 		me.AddListener(n)
 	}
 
+	// TODO, do the remove listener
+
 }
 
 func (me *Client) AddListener(node string){
@@ -55,7 +57,7 @@ func (me *Client) AddListener(node string){
 }
 
 
-func (me *Client) Listen(){
+func (me *Client) WsListen(){
 
 	var bits = make([]byte, 512)
 	var n int
@@ -83,7 +85,16 @@ func (me *Client) Listen(){
 
 func (me *Client) Start() error {
 
-	me.Connect()
+	err := me.Connect()
+	if err != nil {
+		fmt.Println("Fatal, cannot start", err)
+	}
+
+	go me.WsListen()
+
+	for node, _ := range me.Nodes {
+		me.AddListener(node)
+	}
 
 	return nil
 }
@@ -106,29 +117,25 @@ func (me *Client) Connect() error {
 	//fmt.Println("Connected")
 
 	// Start the websocket reader
-	go me.Listen()
+
 
 	//fmt.Println("ssssssss", me.Nodes)
 
 	// Add all nodes as liteners
-	for node, _ := range me.Nodes {
-		me.SendCommand( AddListenerCmd(node) )
-	}
 
-	// Get all nodes
-	for node, _ := range me.Nodes {
-		me.SendCommand( GetCmd(node) )
-	}
+
 
 	return nil
 }
 
 func (me *Client) SendValue(node string, value string) {
+
 	me.SendCommand( SetCmd(node, value) )
 }
 
 
 func (me *Client) SendCommand(comm interface{}) error {
+	fmt.Println("SendCommand", comm)
 	bits, err := json.Marshal(comm)
 	if err != nil {
 		fmt.Println("jsonerror", err)
@@ -137,7 +144,7 @@ func (me *Client) SendCommand(comm interface{}) error {
 	//fmt.Println("bits", string(bits))
 	if _, err := me.Ws.Write(bits); err != nil {
 		//log.Fatal(err)
-		//fmt.Println("written", err)
+		fmt.Println("written", err)
 	}
 	return nil
 }

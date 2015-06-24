@@ -57,14 +57,17 @@ func (me *Board) ScanButtons() {
 		//fmt.Println(now)
 		for i := 0; i < 8; i++ {
 			v := me.Pfd.InputPins[i].Value() == 1
+
+			// button pressed, but not previously
 			if v == true && me.States[i] == false {
-				// button pressed, but not previous
 				me.States[i] = true
 				inp := InputState{i, true}
 				me.InputChan <- inp
+
+			// button previouslt pressed has been released
 			} else if v == false && me.States[i] == true {
 				me.States[i] = false
-				//me.ButtChan <- Button{i, false}
+				//me.ButtChan <- Button{i, false} // we only send presses...
 
 			}
 			//fmt.Println(i, v, v)
@@ -94,20 +97,20 @@ func (me *Board) PretendInputs(  inputs []config.InputPin) {
 	for _, inp := range inputs {
 
 		fmt.Println("inp=", inp)
-
-		tick := time.NewTicker(time.Duration(inp.Pin + 2) * time.Second)
-		go func(in_pin config.InputPin) {
-			var state bool
-			for {
-				select {
-				case <-tick.C:
-					//fmt.Println("GO", tick, in_pin)
-					state = !state
+		if inp.Disabled == false {
+			tick := time.NewTicker(time.Duration(inp.Pin + 2) * time.Second)
+			go func(in_pin config.InputPin) {
+				var state bool
+				for {
+					select {
+					case <-tick.C:
+						//fmt.Println("GO", tick, in_pin)
+						state = !state
 					me.InputChan <- InputState{Pin: in_pin.Pin, State: state}
+					}
 				}
-			}
-		}(inp)
-
+			}(inp)
+		}
 
 	}
 

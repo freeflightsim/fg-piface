@@ -36,7 +36,7 @@ func main() {
 
 	// initialise the websocket client
 	client := fgio.NewClient("192.168.50.153", "7777")
-	client.UpdateListeners( conf.GetOutputNodes() )
+	client.AddNodes( conf.GetOutputNodes() )
 
 	go client.Start()
 
@@ -68,27 +68,45 @@ func main() {
 
 				}
 			}
-			fmt.Println("nodes", node_vals)
+			//fmt.Println("nodes", node_vals)
 
 
 		// Buttons Pressed
-		case input := <- board.InputChan:
-			//fmt.Println(" INNN = ", input)
+		case inp_ev := <- board.InputChan:
+			//fmt.Println(" INNN = ", inp_ev)
 
-			//if input.Pin == 0 {
+			if true  {
 				// find the value from config
-				ip := conf.GetInputFromPin(input.Pin)
+				in_def := conf.GetInputFromPin(inp_ev.Pin)
 
+				curr_val := node_vals[in_def.Node]
+
+
+				send_val := ""
+				if curr_val == in_def.On {
+					send_val = in_def.Off
+
+				} else if curr_val == in_def.Off {
+					send_val = in_def.On
+
+				} else {
+					fmt.Println("ARGS=", curr_val)
+				}
+				fmt.Println(in_def.Id, "curr=", curr_val, " on=", in_def.On, "off = " , in_def.Off, "send = ",  send_val)
+
+				client.SendValue(in_def.Node, send_val)
+				/*
 				send_val := ip.Off
-				if input.State == true {
+				if inp_ev.State == true {
 					send_val = ip.On
 				}
-			if send_val == "" {
+				*/
+				//if send_val == "" {
 
-			}
+				//}
 				//fmt.Println(" n /v = ", ip, send_val)
 				//client.SendValue(ip.Node, send_val)
-			//}
+			}
 
 
 		}
