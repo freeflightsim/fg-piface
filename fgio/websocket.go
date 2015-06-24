@@ -35,25 +35,20 @@ func NewClient(host string, port string) *Client{
 }
 
 // Update nodes to listen on
-func (me *Client) UpdateListeners(nodes []string){
+func (me *Client) AddNodes(nodes []string){
 
 	// first we make all current nodes, if any false
-	for k, _ := range me.Nodes {
-		me.Nodes[k] = false
-	}
+	//for k, _ := range me.Nodes {
+	//	me.Nodes[k] = false
+	//}
 
 	// next we add the nodes
 	for _, n := range nodes {
-		me.AddListener(n)
+		me.Nodes[n] = true
 	}
 
 	// TODO, do the remove listener
 
-}
-
-func (me *Client) AddListener(node string){
-	me.Nodes[node] = true
-	fmt.Println(" + AddListener", node)
 }
 
 
@@ -99,6 +94,11 @@ func (me *Client) Start() error {
 	return nil
 }
 
+func (me *Client) AddListener(node string){
+
+	fmt.Println(" + AddListener", node)
+}
+
 func (me *Client) Connect() error {
 
 	// keeping adhoc creation of hosts etc in case
@@ -114,16 +114,6 @@ func (me *Client) Connect() error {
 		fmt.Println("fatal", err)
 		return err
 	}
-	//fmt.Println("Connected")
-
-	// Start the websocket reader
-
-
-	//fmt.Println("ssssssss", me.Nodes)
-
-	// Add all nodes as liteners
-
-
 
 	return nil
 }
