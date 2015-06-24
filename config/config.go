@@ -13,8 +13,9 @@ import (
 
 type Config struct {
 	Model string 	` yaml:"model" `
-	Inputs []InputPin	` yaml:"inputs" `
-	Outputs []OutputPin	` yaml:"outputs" `
+	InputDefs []InputPin	` yaml:"inputs" `
+	OutputDefs []OutputPin	` yaml:"outputs" `
+	zxOutputs map[int]string
 }
 
 func Load(file_path string) (*Config, error) {
@@ -51,7 +52,7 @@ func (me *Config) Validate() error {
 	exists := make(map[int]bool)
 	mess := ""
 
-	for _, p := range me.Outputs {
+	for _, p := range me.OutputDefs {
 		if p.Pin > 7 {
 			mess +=  "OutPin " + p.Node + " has index > 7\n"
 		}

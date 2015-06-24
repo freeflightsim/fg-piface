@@ -21,7 +21,7 @@ type InputPin struct {
 func (me *Config) GetInputNodes() []string {
 
 	nodes := make(map[string]bool)
-	for _, p := range me.Inputs {
+	for _, p := range me.InputDefs {
 		_, found := nodes[p.Node]
 		if found == false {
 			nodes[p.Node] = true
@@ -39,12 +39,14 @@ func (me *Config) GetInputNodes() []string {
 // Returns a list of unique input Nodes
 func (me *Config) GetInputFromPin(pin_no int) InputPin {
 
+
 	var ip InputPin
-	for _, p := range me.Inputs {
+	for _, p := range me.InputDefs {
 		if p.Pin == pin_no {
 			return p
 		}
 
 	}
+
 	return ip
 }

@@ -4,12 +4,14 @@ model: 787
 inputs:
     -   pin: 0
         id: ap
+        state: true
         node: /instrumentation/flightdirector/autopilot-on
         on: 1
         off: 0
 
     -   pin: 1
         id: at
+        state: true
         node: /instrumentation/flightdirector/at-on
         on: 1
         off: 0

@@ -35,7 +35,7 @@ func NewClient(host string, port string) *Client{
 }
 
 // Update nodes to listen on
-func (me *Client) UpdateNodes(nodes []string){
+func (me *Client) UpdateListeners(nodes []string){
 
 	// first we make all current nodes, if any false
 	for k, _ := range me.Nodes {
@@ -109,18 +109,22 @@ func (me *Client) Connect() error {
 	go me.Listen()
 
 	//fmt.Println("ssssssss", me.Nodes)
+
+	// Add all nodes as liteners
 	for node, _ := range me.Nodes {
-		//fmt.Println("addNode", n)
-		comm := NewAddListenerCmd(node)
-		me.SendCommand(comm)
+		me.SendCommand( AddListenerCmd(node) )
+	}
+
+	// Get all nodes
+	for node, _ := range me.Nodes {
+		me.SendCommand( GetCmd(node) )
 	}
 
 	return nil
 }
 
 func (me *Client) SendValue(node string, value string) {
-	comm := Command{"set", node, value}
-	me.SendCommand(comm)
+	me.SendCommand( SetCmd(node, value) )
 }
 
 
