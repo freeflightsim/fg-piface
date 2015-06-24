@@ -15,6 +15,28 @@ type OutputPin struct {
 	On string 		` yaml:"on" `
 }
 
+
+// Returns a list of unique output Nodes
+func (me *Config) GetOutputNodes() []string {
+
+	nodes := make(map[string]bool)
+	for _, p := range me.Outputs {
+		_, found := nodes[p.Node]
+		if found == false {
+			nodes[p.Node] = true
+		}
+	}
+	lst := make([]string, 0)
+	for n, _ := range nodes {
+		lst = append(lst, n)
+	}
+	return lst
+
+}
+
+
+
+
 func (me OutputPin) IsOn(val string) bool {
 	// TODO add >3 and comparison
 	if strings.Contains(me.On, ","){

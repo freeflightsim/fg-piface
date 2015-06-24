@@ -57,7 +57,7 @@ func main() {
 
 				if op.Node == msg.Node {
 					//fmt.Println("        YES = ", led)
-					on := op.IsOn( msg.String() )
+					on := op.IsOn( msg.StrValue() )
 					board.SetOutput(op.Pin, on)
 
 				}
@@ -68,7 +68,19 @@ func main() {
 		// Buttons Pressed
 		case input := <- board.InputChan:
 			fmt.Println(" INNN = ", input)
-			client.SendValue("/autopilot/locks/heading", "fg-heading-hold")
+
+			//if input.Pin == 0 {
+				// find the value from config
+				ip := conf.GetInputFromPin(input.Pin)
+				fmt.Println(" n /v = ", ip)
+				send_val := ip.Off
+				if input.State == true {
+					send_val = ip.On
+				}
+				client.SendValue(ip.Node, send_val)
+			//}
+
+
 		}
 	}
 

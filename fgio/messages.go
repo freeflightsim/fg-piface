@@ -17,7 +17,8 @@ type MessageFrame struct {
 	RawValue interface{} ` json:"value" `
 }
 
-func (me MessageFrame) String() string {
+// Returns RawValue as string regardless of Type
+func (me MessageFrame) StrValue() string {
 
 	switch me.Type {
 	case "string":

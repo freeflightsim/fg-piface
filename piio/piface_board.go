@@ -19,7 +19,7 @@ import (
 type Board struct {
 	Enabled bool
 	Pfd      *piface.PiFaceDigital
-	InputChan chan Button
+	InputChan chan InputState
 	States   map[int]bool
 }
 
@@ -27,7 +27,7 @@ func NewPifaceBoard() *Board {
 	b := new(Board)
 	b.Enabled = false
 	b.Pfd = piface.NewPiFaceDigital(spi.DEFAULT_HARDWARE_ADDR, spi.DEFAULT_BUS, spi.DEFAULT_CHIP)
-	b.InputChan = make(chan Button)
+	b.InputChan = make(chan InputState)
 	b.States = make(map[int]bool)
 	for i := 0; i < 8; i++ {
 		b.States[i] = false
@@ -60,8 +60,8 @@ func (me *Board) ScanButtons() {
 			if v == true && me.States[i] == false {
 				// button pressed, but not previous
 				me.States[i] = true
-				b := Button{i, true}
-				me.InputChan <- b
+				inp := InputState{i, true}
+				me.InputChan <- inp
 			} else if v == false && me.States[i] == true {
 				me.States[i] = false
 				//me.ButtChan <- Button{i, false}
@@ -101,9 +101,9 @@ func (me *Board) PretendInputs(  inputs []config.InputPin) {
 			for {
 				select {
 				case <-tick.C:
-					fmt.Println("GO", tick, in_pin)
+					//fmt.Println("GO", tick, in_pin)
 					state = !state
-					me.InputChan <- Button{in_pin.Pin, state}
+					me.InputChan <- InputState{Pin: in_pin.Pin, State: state}
 				}
 			}
 		}(inp)

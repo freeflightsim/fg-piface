@@ -2,7 +2,7 @@
 
 package piio
 
-type Button struct {
+type InputState struct {
 	Pin int
 	State bool
 }
