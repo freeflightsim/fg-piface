@@ -3,12 +3,14 @@
 package main
 
 import (
-	//"os"
+	"os"
+	"os/signal"
 	"fmt"
-	"time"
-	//"reflect"
+
+
 
 	"github.com/freeflightsim/fg-piface/config"
+	"github.com/freeflightsim/fg-piface/ardio"
 	"github.com/freeflightsim/fg-piface/fgio"
 	"github.com/freeflightsim/fg-piface/piio"
 	"github.com/freeflightsim/fg-piface/vstate"
@@ -26,6 +28,9 @@ func main() {
 		return
 	}
 	fmt.Println(" conf= ", conf)
+
+	killChan := make(chan os.Signal, 1)
+	signal.Notify(killChan, os.Interrupt)
 
 	//= Initialise some local sotre and state
 	state := vstate.NewVState()
@@ -48,6 +53,7 @@ func main() {
 	go client.Start()
 
 	//timer := time.NewTicker(time.Second)
+	go ardio.Run()
 
 	// Loop around the messages from channels
 	for {

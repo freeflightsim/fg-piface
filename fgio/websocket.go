@@ -121,7 +121,7 @@ func (me *Client) WsSet(node string, value string) {
 
 
 func (me *Client) SendCommand(comm interface{}) error {
-	fmt.Println("SendCommand", comm)
+	//fmt.Println("SendCommand", comm)
 	bits, err := json.Marshal(comm)
 	if err != nil {
 		fmt.Println("jsonerror", err)
