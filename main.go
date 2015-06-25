@@ -47,12 +47,12 @@ func main() {
 	client.AddNodes( state.GetNodes() )
 	go client.Start()
 
-	timer := time.NewTicker(time.Second)
+	//timer := time.NewTicker(time.Second)
 
 	// Loop around the messages from channels
 	for {
 		select {
-
+		/*
 		case t := <- timer.C:
 			//fmt.Println("t=", t.Second() )
 			sec := float64((t.Second() % 10)) * 0.1
@@ -61,7 +61,7 @@ func main() {
 			v2 := fmt.Sprintf( "%0.1f", 1.0 - sec )
 			client.WsSet(eng_node, v)
 			client.WsSet("/controls/engines/engine[0]/throttle", v2)
-
+		*/
 
 		// Messages from Flightgear
 		case msg := <- client.WsChan:
