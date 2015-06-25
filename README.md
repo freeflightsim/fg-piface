@@ -5,11 +5,13 @@ FlightGear leds and buttons with PiFace (soon 7 seg and knobs)
 
 This is a bit of fun and some research into creating a MCP interface using
 - a raspberry pi model B (NOT b+)
-- a piface digital io board
+- a piface digital io board (shich does not fit B= without extender)
+- a network cable
 - Fg comms via websocket
 - and golang for its channels
+- or download a binary
 
-http://www.piface.org.uk/products/piface_digital/
+- http://www.piface.org.uk/products/piface_digital/
 
 Run
 ==============
@@ -26,6 +28,8 @@ fgfs Host Machine
 
 So Far
 =============================
+
+
 
 # Update 2015-06-22
 - The websocket and buttons work

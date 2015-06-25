@@ -1,30 +1,50 @@
 
 model: 787
 
+
+
 inputs:
     -   pin: 0
         id: ap
-        deadstate: true
+        comment: Autopilot engaged
+        toggle: true
         node: /instrumentation/flightdirector/autopilot-on
         on: 1
         off: 0
 
     -   pin: 1
         id: at
-        deadstate: true
+        comment: Autothrottle to control engines
+        toggle: true
         node: /instrumentation/flightdirector/at-on
         on: 1
         off: 0
 
     -   pin: 2
         id: alt
+        comment: Altitude Hold
+        node: /instrumentation/flightdirector/vnav
+        on: 1
+        off: 0
+
+    -   pin: 3
+        id: vs
+        comment: vnav is ?
+        node: /instrumentation/flightdirector/vnav
+        on: 3
+        off: 0
+        disabled: true
+
+    -   pin: 6
+        id: alt
         node: /instrumentation/flightdirector/vnav
         on: 2
         off: 0
         disabled: true
 
-    -   pin: 3
+    -   pin: 7
         id: vs
+        comment: Altitude Hold
         node: /instrumentation/flightdirector/vnav
         on: 3
         off: 0
@@ -33,6 +53,7 @@ inputs:
 outputs:
     -   pin: 7
         id: enabled
+        comment: Altitude Hold
         node: /instrumentation/flightdirector/autopilot-on
         on: 1
 

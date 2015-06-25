@@ -5,13 +5,13 @@ package main
 import (
 	//"os"
 	"fmt"
-
+	"time"
 	//"reflect"
 
 	"github.com/freeflightsim/fg-piface/config"
 	"github.com/freeflightsim/fg-piface/fgio"
 	"github.com/freeflightsim/fg-piface/piio"
-
+	"github.com/freeflightsim/fg-piface/vstate"
 )
 
 
@@ -27,44 +27,58 @@ func main() {
 	}
 	fmt.Println(" conf= ", conf)
 
-	node_vals := make( map[string]string )
+	//= Initialise some local sotre and state
+	state := vstate.NewVState()
+	state.AddNodes(  conf.GetOutputNodes() )
+
+	eng_node := "/controls/engines/engine[1]/throttle"
+	state.AddNode(eng_node)
 
 	// initialise Piface
 	board := piio.NewPifaceBoard()
 	board.Init()
-
-
-	// initialise the websocket client
-	client := fgio.NewClient("192.168.50.153", "7777")
-	client.AddNodes( conf.GetOutputNodes() )
-
-	go client.Start()
-
 	if board.Enabled == false {
+		// On a pc with no piface, we fake inputs with timers
 		board.PretendInputs( conf.InputDefs )
 	}
 
+	// initialise the websocket client
+	client := fgio.NewFgClient("192.168.50.153", "7777")
+	client.AddNodes( state.GetNodes() )
+	go client.Start()
+
+	timer := time.NewTicker(time.Second)
+
 	// Loop around the messages from channels
-	//state := false
 	for {
 		select {
 
-		// Messages from the client
+		case t := <- timer.C:
+			//fmt.Println("t=", t.Second() )
+			sec := float64((t.Second() % 10)) * 0.1
+			//fmt.Println( sec )
+			v := fmt.Sprintf( "%0.1f", sec )
+			v2 := fmt.Sprintf( "%0.1f", 1.0 - sec )
+			client.WsSet(eng_node, v)
+			client.WsSet("/controls/engines/engine[0]/throttle", v2)
+
+
+		// Messages from Flightgear
 		case msg := <- client.WsChan:
 			//fmt.Printf("#%s#\n", msg.Node)
-			//v, found := node_vals[msg.Node]
-			//if found == false {
-			node_vals[msg.Node] = msg.StrValue()
-			//} else {
 
-			//}
+			if msg.Node == eng_node {
+				fmt.Println("eng", msg.RawValue )
+			}
 
-			for _, op := range conf.OutputDefs {
+			state.Update( msg.Node, msg.StrValue() )
 
-				if op.Node == msg.Node {
+			for _, out_p := range conf.OutputDefs {
+
+				if out_p.Node == msg.Node {
 					//fmt.Println("        YES = ", led)
-					on := op.IsOn( msg.StrValue() )
-					board.SetOutput(op.Pin, on)
+					on := out_p.IsOn( msg.StrValue() )
+					board.SetOutput(out_p.Pin, on)
 
 				}
 			}
@@ -79,7 +93,7 @@ func main() {
 				// find the value from config
 				in_def := conf.GetInputFromPin(inp_ev.Pin)
 
-				curr_val := node_vals[in_def.Node]
+				curr_val := state.GetNodeVal(in_def.Node)
 
 
 				send_val := ""
@@ -94,7 +108,7 @@ func main() {
 				}
 				fmt.Println(in_def.Id, "curr=", curr_val, " on=", in_def.On, "off = " , in_def.Off, "send = ",  send_val)
 
-				client.SendValue(in_def.Node, send_val)
+				client.WsSet(in_def.Node, send_val)
 				/*
 				send_val := ip.Off
 				if inp_ev.State == true {

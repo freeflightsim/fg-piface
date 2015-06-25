@@ -1,0 +1,74 @@
+# This is the mad idea of creating a declarative
+# language for use with FlightGear and WebSocket..
+#
+# The concept is to create a "bot" applcation,
+# on a raspberry pi and connected
+# to some relay outputs, leds, aruidno et all.
+# the problem is how to handles all these things
+# in a real sim pit, and make buttons, and knobs work
+# with a running flightgear instance..
+#
+# After some research the concept in mind is to create a
+# "declarative", bunch of config files
+# and a pattern to make system easily changable..
+#
+#
+Out of this experiment, I kinda figures out I want a config..
+
+Such as a gleare shield
+- using a piface for the glareshield "led" announicators
+- using piface and buttons for glareshield
+- using a few maxim leds on an spi bus
+- using arduino serial
+
+So this end up being declarative, in that a light is On when a state exists..
+
+For example.. to set the "autopilot-on" light
+and some "push to engage buttons"
+
+
+outputs:
+
+    -   pin: 6
+        id: at
+        comment: AutoThrottle engines light
+        node: /instrumentation/flightdirector/at-on
+        on: 1
+
+inputs:
+    -   pin: 0
+        id: ap
+        comment: Autopilot engaged button
+        toggle: true
+        node: /instrumentation/flightdirector/autopilot-on
+        on: 1
+        off: 0
+
+    -   pin: 1
+        id: at
+        comment: Autothrottle to control engines
+        toggle: true
+        node: /instrumentation/flightdirector/at-on
+        on: 1
+        off: 0
+
+so issue is to take a reflection from flightgear.
+and use a declarative stuff to send it to our device..
+to so that we are using go cos its fun and easy
+to play with channels and multitaks.. hardcore and newbies alike.. mainly newbie..
+
+Not sure what is happening, but I feel like I want to define
+a set of "types"..eg
+- an output = led and alight when "/instrumentation/flightdirector/vnav" "3,5"
+
+So we can be clever with being declarative..
+an led is alight, when conditions are met
+
+Inputs with a simple "push" and moment on off.
+is used to toggle a state, such as athrottle-on and a 1 or 0
+The complication with input..
+is we only detect a push of button.. but need to maintainte
+of what is the one and off of this button..
+ie. .when I press this button
+.. if the node I am inputing to is an Off atmo, then send an On
+

@@ -8,17 +8,15 @@ import (
 type Command struct {
 	Cmd string ` json:"command" `
 	Node string ` json:"node" `
-	Value string ` json:"value,omitempty" `
-
 }
-/*
+
 type CommandVal struct {
 	Cmd string ` json:"command" `
 	Node string ` json:"node" `
-
+	Value string ` json:"value" `
 }
 
-
+/*
 func AddListenerCmd(node string) Command {
 	return Command{Cmd: "addListener", Node: node}
 }

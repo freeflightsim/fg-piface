@@ -40,7 +40,6 @@ func (me *Config) GetOutputNodes() []string {
 func (me OutputPin) IsOn(val string) bool {
 	// TODO add >3 and comparison
 	if strings.Contains(me.On, ","){
-
 		for _, s := range strings.Split(me.On, ",") {
 			if s == val {
 				return true
