@@ -1,7 +1,7 @@
 fg-piface
 =========
 
-FlightGear leds and buttons with PiFace (soon 7 seg and knobs)
+At last instead of dabbling yourself, u can share some of teh stuff ere with this code..
 
 This is a bit of fun and some research into creating a MCP interface using
 - a raspberry pi model B (NOT b+)
@@ -12,6 +12,36 @@ This is a bit of fun and some research into creating a MCP interface using
 - or download a binary
 
 - http://www.piface.org.uk/products/piface_digital/
+
+and its working..
+Threre is no a cunning plan to use golang..
+and create a virtual "arinc" can bus..
+- The golang as the "router"
+  - weksocket interface
+  - udp custom protocol interface
+  - all transmit and udpate state on the varinc
+- attaches nodes
+  - these could be an arduino and its digit in, out
+  - rpi board with a piface.. a display unit, and digital in/outs
+  - Basically making a sim pit with switches and lights etc..
+  
+So the main problem is how to "communicate" with Fg
+- and make all the lights go on and off etc,
+- and presing a button makes things happen
+
+So after some research..
+with golang, and multiple channel go routines
+its kinda working and being a boring olde progammer
+- on the rpi thing.. the switches and ligts go on an off with display
+  - and piface, digital io and inputs
+- arduino -
+  - is working as analog reads and major decicions
+  
+  Next step is to make things talk to each other and multiplex
+  and for that we need i2c interface, ie single wire..
+  
+  
+
 
 Run
 ==============
