@@ -1,9 +1,16 @@
 
 model: 787
 
+analog_inputs:
+   -    pin: 0
+        id: throttle
+        comment: Throttle pot
+        stateful: true
+        node: /tod/do//
 
 
-inputs:
+
+digital_inputs:
     -   pin: 0
         id: ap
         comment: Autopilot engaged
@@ -50,7 +57,7 @@ inputs:
         off: 0
         disabled: true
 
-outputs:
+digital_outputs:
     -   pin: 7
         id: enabled
         comment: Altitude Hold

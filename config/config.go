@@ -13,8 +13,9 @@ import (
 
 type Config struct {
 	Model string 	` yaml:"model" `
-	InputDefs []InputPin	` yaml:"inputs" `
-	OutputDefs []OutputPin	` yaml:"outputs" `
+	DInPins []InputPin	` yaml:"digital_inputs" `
+	AInPins []InputPin	` yaml:"analog_inputs" `
+	DOupPins []OutputPin	` yaml:"digital_outputs" `
 	zxOutputs map[int]string
 }
 

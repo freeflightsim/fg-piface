@@ -36,6 +36,7 @@ func main() {
 	state := vstate.NewVState()
 	state.AddNodes(  conf.GetOutputNodes() )
 
+
 	eng_node := "/controls/engines/engine[1]/throttle"
 	state.AddNode(eng_node)
 
@@ -53,22 +54,30 @@ func main() {
 	go client.Start()
 
 	//timer := time.NewTicker(time.Second)
-	go ardio.Run()
+	ard_board := ardio.NewArduinoBoard()
+	go ard_board.Run()
 
+	var last_v int64
 	// Loop around the messages from channels
 	for {
 		select {
-		/*
-		case t := <- timer.C:
-			//fmt.Println("t=", t.Second() )
-			sec := float64((t.Second() % 10)) * 0.1
-			//fmt.Println( sec )
-			v := fmt.Sprintf( "%0.1f", sec )
-			v2 := fmt.Sprintf( "%0.1f", 1.0 - sec )
-			client.WsSet(eng_node, v)
-			client.WsSet("/controls/engines/engine[0]/throttle", v2)
-		*/
 
+		// ctrl+c to kill
+		case  <- killChan:
+
+			fmt.Println( "killed" )
+			os.Exit(0)
+
+		// Anaolog pin from arduino
+		case apin := <- ard_board.AnalogChan:
+
+			if last_v != apin.Val {
+				vs := float64(apin.Val) / 100.0
+				vsf := fmt.Sprintf("%0.2f", vs)
+				fmt.Println("read", apin, vsf)
+				client.WsSet(eng_node, vsf)
+				last_v = apin.Val
+			}
 		// Messages from Flightgear
 		case msg := <- client.WsChan:
 			//fmt.Printf("#%s#\n", msg.Node)
