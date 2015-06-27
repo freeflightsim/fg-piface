@@ -15,7 +15,7 @@ type Config struct {
 	Model string 	` yaml:"model" `
 	DInPins []InputPin	` yaml:"digital_inputs" `
 	AInPins []InputPin	` yaml:"analog_inputs" `
-	DOupPins []OutputPin	` yaml:"digital_outputs" `
+	DOutPins []OutputPin	` yaml:"digital_outputs" `
 	zxOutputs map[int]string
 }
 
@@ -53,7 +53,7 @@ func (me *Config) Validate() error {
 	exists := make(map[int]bool)
 	mess := ""
 
-	for _, p := range me.OutputDefs {
+	for _, p := range me.DOutPins {
 		if p.Pin > 7 {
 			mess +=  "OutPin " + p.Node + " has index > 7\n"
 		}

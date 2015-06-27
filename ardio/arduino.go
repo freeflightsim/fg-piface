@@ -24,11 +24,13 @@ type AnalogPin struct {
 type ArduinoBoard struct {
 	Serial io.ReadWriteCloser
 	AnalogChan chan AnalogPin
+	Enabled bool
 }
 
 func NewArduinoBoard() *ArduinoBoard {
 	b := new(ArduinoBoard)
 	b.AnalogChan = make(chan AnalogPin)
+	b.Enabled = false
 	return b
 }
 
@@ -44,12 +46,10 @@ func (me *ArduinoBoard) Run() {
 	if err != nil {
 		//log.Fatal(err)
 		fmt.Println( "======", err  )
+		return
 	}
+	me.Enabled = true
 
-	//n, err := s.Write([]byte("test"))
-	//if err != nil {
-		//log.Fatal(err)
-	//}
 	var n int
 	var lbuff bytes.Buffer
 	buf := make([]byte, 128)
@@ -72,10 +72,20 @@ func (me *ArduinoBoard) Run() {
 			} else {
 				lbuff.Write(char)
 			}
-
-
 		}
-
-
 	}
+}
+
+func (me *ArduinoBoard) SendSerial(val string) {
+	fmt.Println("SendSerial.n=", val)
+	val = val + "\n"
+	if me.Enabled == false {
+		fmt.Println("SendSerial.backout <<")
+		return
+	}
+	n, err := me.Serial.Write([]byte(val))
+	if err != nil {
+		fmt.Println("SendSerial.err=", err)
+	}
+	fmt.Println("SendSerial.senf=", n)
 }

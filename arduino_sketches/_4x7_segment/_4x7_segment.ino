@@ -12,15 +12,22 @@ int GND3 = 11; //       |________|
 int GND4 = 12; //       
 int num = 0;  //         D
 int val = 0;
+
 int dig1 = 0;
 int dig2 = 0;
 int dig3 = 0;
 int dig4 = 0;
-int DTime = 4;
+
+int DTime = 3;
 
 bool on = 0;
 bool off = 1;
+int curr_num = 0;
 
+long previousMillis = 0; 
+long interval = 500;
+
+String in_str = "";
 
 void setup()
 {
@@ -39,61 +46,90 @@ void setup()
 }
 void loop()
 {
-  digitalWrite( GND1, HIGH);
-  digitalWrite( GND2, HIGH);
-  digitalWrite( GND3, HIGH);
-  digitalWrite( GND4, HIGH);
-
-
-  delay(400);
-  if ( val == 9 ) {
-    val = 0;
-    num = 2;
-  } else {
-    val = val + 1;
-    num = 3;
-  }
-  //num = 0;
-  //val = 1;
-  //num = val;
-  //num = random(0, 9999);
-  Serial.print(num);
-  dig1 = val;// val; //num / 1000;
-  //num = num - (dig1 * 1000);
-  dig2 = val; //num / 100;
-  //num = num - (dig2 * 100);
-  dig3 = num; //num / 10;
-  dig4 = num; //num - (dig3 *10);
   
-  Serial.print(" ");
-  Serial.print(dig1);
-  Serial.print(" ");
-  Serial.print(dig2);
-  Serial.print(" ");
-  Serial.println(dig3);
+  digitalWrite( GND1, LOW);
+  digitalWrite( GND2, LOW);
+  digitalWrite( GND3, LOW);
+  digitalWrite( GND4, LOW);
+
+
+  //delay(1000);
+  if (Serial.available() > 0) {
+    
+    int c = Serial.read();  //gets one byte from serial buffer
+    if( isDigit(c) ){
+      in_str += (char)c;
+    }
+    if( c == '\n'){
+     // Serial.print("----");
+      //Serial.println(in_str);
+      curr_num = in_str.toInt();
+      in_str = "";
+    }
+    
+  //unsigned long currentMillis = millis();
+  //if(currentMillis - previousMillis > interval) {
+    //previousMillis = currentMillis;
+    //curr_num = random(0, 9999);
+     //Serial.print(curr_num);
+    
+
  
- 
-  digitalWrite( GND4, LOW);    //digit 4
+    num = curr_num;
+    dig1 = num / 1000;
+    num = num - (dig1 * 1000);
+    dig2 = num / 100;
+    num = num - (dig2 * 100);
+    dig3 = num / 10;
+    dig4 = num - (dig3 *10);
+    /*
+    Serial.print(" = ");
+    Serial.print(dig1);
+    Serial.print(" ");
+    Serial.print(dig2);
+    Serial.print(" ");
+    Serial.print(dig3);
+    Serial.print(" ");
+    Serial.println(dig4);
+    */
+   }
+   
+   int pinz[] = {GND4, GND3, GND2, GND1};
+   int vals[] = {dig4, dig3, dig2, dig1};
+   int i;
+   for (i = 0; i < 4; i = i + 1) {
+         digitalWrite( pinz[i], off);    //digit 4
+         pickNumber(vals[i]);
+        /// Serial.print(i );
+         ///Serial.print(pinz[i]);
+         delay(DTime);
+         digitalWrite( pinz[i], on);
+   }
+   
+   /*
+   
+  digitalWrite( GND4, off);    //digit 4
   pickNumber(dig4);
   delay(DTime);
-  digitalWrite( GND4, HIGH);
+  digitalWrite( GND4, on);
  
   
-  digitalWrite( GND3, LOW);    //digit 3
+  digitalWrite( GND3, off);    //digit 3
   pickNumber(dig3);
   delay(DTime);
-  digitalWrite( GND3, HIGH);
+  digitalWrite( GND3, on);
  
-  digitalWrite( GND2, LOW);   //digit 2
+  digitalWrite( GND2, off);   //digit 2
   pickNumber(dig2);
   delay(DTime);
-  digitalWrite( GND2, HIGH);
+  digitalWrite( GND2, on);
  
-  digitalWrite( GND1, LOW);   //digit 1
+  digitalWrite( GND1, off);   //digit 1
   pickNumber(dig1);
   delay(DTime);
-  digitalWrite( GND1, HIGH);
-
+  digitalWrite( GND1, on);
+  */
+  
 }
  
 void pickNumber(int x){
@@ -113,13 +149,23 @@ void pickNumber(int x){
 
 void clearLEDs()
 {  
-  digitalWrite(  aPin, LOW); // A
-  digitalWrite(  bPin, LOW); // B
-  digitalWrite(  cPin, LOW); // C
-  digitalWrite(  dPin, LOW); // D
-  digitalWrite(  ePin, LOW); // E
-  digitalWrite(  fPin, LOW); // F
-  digitalWrite(  gPin, LOW); // G
+  digitalWrite(  aPin, off); // A
+  digitalWrite(  bPin, off); // B
+  digitalWrite(  cPin, off); // C
+  digitalWrite(  dPin, off); // D
+  digitalWrite(  ePin, off); // E
+  digitalWrite(  fPin, off); // F
+  digitalWrite(  gPin, off); // G
+}
+void dash()
+{  
+  digitalWrite(  aPin, off); // A
+  digitalWrite(  bPin, off); // B
+  digitalWrite(  cPin, off); // C
+  digitalWrite(  dPin, off); // D
+  digitalWrite(  ePin, off); // E
+  digitalWrite(  fPin, off); // F
+  digitalWrite(  gPin, on); // G
 }
 void zero()
 {

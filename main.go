@@ -36,6 +36,8 @@ func main() {
 	state := vstate.NewVState()
 	state.AddNodes(  conf.GetOutputNodes() )
 
+	ias_node := "/instrumentation/airspeed-indicator/indicated-speed-kt"
+	state.AddNode(ias_node)
 
 	eng_node := "/controls/engines/engine[1]/throttle"
 	state.AddNode(eng_node)
@@ -45,7 +47,7 @@ func main() {
 	board.Init()
 	if board.Enabled == false {
 		// On a pc with no piface, we fake inputs with timers
-		board.PretendInputs( conf.InputDefs )
+		//board.PretendInputs( conf.DInPins )
 	}
 
 	// initialise the websocket client
@@ -55,7 +57,10 @@ func main() {
 
 	//timer := time.NewTicker(time.Second)
 	ard_board := ardio.NewArduinoBoard()
+
+
 	go ard_board.Run()
+
 
 	var last_v int64
 	// Loop around the messages from channels
@@ -78,17 +83,24 @@ func main() {
 				client.WsSet(eng_node, vsf)
 				last_v = apin.Val
 			}
+
 		// Messages from Flightgear
 		case msg := <- client.WsChan:
 			//fmt.Printf("#%s#\n", msg.Node)
 
 			if msg.Node == eng_node {
-				fmt.Println("eng", msg.RawValue )
+				fmt.Println("eng", msg.StrValue() )
+			}
+
+			if msg.Node == ias_node {
+				fmt.Println("iass", msg.StrValue() )
+				ard_board.SendSerial( msg.StrValue() )
+				//num = ParseInt(msg.WayValue)
 			}
 
 			state.Update( msg.Node, msg.StrValue() )
 
-			for _, out_p := range conf.OutputDefs {
+			for _, out_p := range conf.DOutPins {
 
 				if out_p.Node == msg.Node {
 					//fmt.Println("        YES = ", led)

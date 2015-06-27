@@ -20,7 +20,7 @@ type OutputPin struct {
 func (me *Config) GetOutputNodes() []string {
 
 	nodes := make(map[string]bool)
-	for _, p := range me.OutputDefs {
+	for _, p := range me.DOutPins {
 		_, found := nodes[p.Node]
 		if found == false {
 			nodes[p.Node] = true
