@@ -1,102 +1,19 @@
 
 model: 787
 
-analog_inputs:
-   -    pin: 0
-        id: throttle
-        comment: Throttle pot
-        stateful: true
-        node: /tod/do//
-
-
-
-digital_inputs:
-    -   pin: 0
-        id: ap
-        comment: Autopilot engaged
-        toggle: true
-        node: /instrumentation/flightdirector/autopilot-on
-        on: 1
-        off: 0
-
-    -   pin: 1
-        id: at
-        comment: Autothrottle to control engines
-        toggle: true
-        node: /instrumentation/flightdirector/at-on
-        on: 1
-        off: 0
-
-    -   pin: 2
-        id: alt
-        comment: Altitude Hold
-        node: /instrumentation/flightdirector/vnav
-        on: 1
-        off: 0
-
-    -   pin: 3
-        id: vs
-        comment: vnav is ?
-        node: /instrumentation/flightdirector/vnav
-        on: 3
-        off: 0
-        disabled: true
-
-    -   pin: 6
-        id: alt
-        node: /instrumentation/flightdirector/vnav
-        on: 2
-        off: 0
-        disabled: true
-
-    -   pin: 7
-        id: vs
-        comment: Altitude Hold
-        node: /instrumentation/flightdirector/vnav
-        on: 3
-        off: 0
-        disabled: true
-
 digital_outputs:
-    -   pin: 7
-        id: enabled
-        comment: Altitude Hold
-        node: /instrumentation/flightdirector/autopilot-on
-        on: 1
+    -   node: ap
+        board: ard_1
+        pin: 0
 
-    -   pin: 6
-        id: at
-        node: /instrumentation/flightdirector/at-on
-        on: 1
+    -   node: at
+        board: ard_1
+        pin: 1
 
-    -   pin: 5
-        id: lnav
-        node: /instrumentation/flightdirector/lnav
-        on: 3,5
+    -   node: lnav
+        board: ard_1
+        pin: 2
 
-    -   pin: 4
-        id: vnav
-        node: /instrumentation/flightdirector/vnav
-        on: 1
-
-    -   pin: 3
-        id: heading_hold
-        node: /instrumentation/flightdirector/lnav
-        on: 1
-
-    -   pin: 2
-        id: vs
-        node: /instrumentation/flightdirector/vnav
-        on: 3
-
-    -   pin: 1
-        id: alt
-        node: /instrumentation/flightdirector/vnav
-        on: 2
-
-    -   pin: 0
-        id: app
-        node: /autopilot/locks/heading
-        on: nav1-hold
-        comment: this is also a v/lnav ?
-
+    -   node: vnav
+        board: ard_1
+        pin: 3

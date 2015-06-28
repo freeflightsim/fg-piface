@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"errors"
-
 )
 
 
@@ -17,6 +16,7 @@ type Config struct {
 	AInPins []InputPin	` yaml:"analog_inputs" `
 	DOutPins []OutputPin	` yaml:"digital_outputs" `
 	zxOutputs map[int]string
+	FgNodes []FgNode
 }
 
 func Load(file_path string) (*Config, error) {
@@ -33,6 +33,8 @@ func Load(file_path string) (*Config, error) {
 	if err_yaml != nil {
 		return nil, err_yaml
 	}
+
+	conf.LoadFgNodes()
 	/*
 	conf.LedMap = make(map[string]int)
 	for _, led := range conf.Leds {

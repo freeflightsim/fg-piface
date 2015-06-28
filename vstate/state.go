@@ -3,8 +3,18 @@
 
 package vstate
 
+import (
+	"errors"
+	"strconv"
+)
+
 type State struct {
+
+	// Store Mapping of nodes
+	FgProps map[string]bool
 	Nodes map[string]string
+
+
 
 }
 
@@ -46,4 +56,14 @@ func (me *State) Update( node, val string ) {
 
 func (me *State) GetNodeVal( node string ) string {
 	return me.Nodes[node]
+}
+func (me *State) GetInt( node string ) (int64, error) {
+
+	n_val, found := me.Nodes[node]
+	if found == false {
+		return 0, errors.New("not found")
+	}
+
+	v, err := strconv.ParseInt(n_val, 10, 32)
+	return v, err
 }

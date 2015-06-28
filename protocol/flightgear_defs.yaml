@@ -1,0 +1,58 @@
+# The idea is to create a set of definitions..
+# and the nodes to lsiten to and send to
+# whether by ws, udp, or telnet, ajax et all
+#
+# So the concept is to define the noted here..
+# and indeed maybe a bit of replication as data already in prop tree
+# and nasal, but this ia working from the micro controller back..
+
+-   id: ap
+    comment: Autopilot engaged
+    node: /instrumentation/flightdirector/autopilot-on
+    toggle: true
+    on: 1
+    off: 0
+
+
+-   id: at
+    comment: Autothrottle to control engines
+    node: /instrumentation/flightdirector/at-on
+    toggle: true
+    on: 1
+    off: 0
+
+
+-   id: lnav
+    comment: Lnav engaged
+    node: /instrumentation/flightdirector/lnav
+    on: 3,5
+
+
+-   id: vnav
+    comment: VNav engaged
+    node: /instrumentation/flightdirector/vnav
+    on: 1
+
+-   id: hdg
+    comment: Heading Hold
+    node: /instrumentation/flightdirector/lnav
+    on: 1
+
+-   id: vs
+    comment: Vertical Speed
+    node: /instrumentation/flightdirector/vnav
+    on: 3
+
+-   id: alt
+    comment: Altitude Hold
+    node: /instrumentation/flightdirector/vnav
+    on: 2
+
+-   id: app
+    comment: Approach (also lnav)
+    node: /autopilot/locks/heading
+    on: nav1-hold
+
+
+
+

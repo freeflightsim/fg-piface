@@ -9,6 +9,7 @@ import (
 
 
 
+
 	"github.com/freeflightsim/fg-piface/config"
 	"github.com/freeflightsim/fg-piface/ardio"
 	"github.com/freeflightsim/fg-piface/fgio"
@@ -22,6 +23,12 @@ func main() {
 
 	//TODO, flags for host, port, config.yaml
 
+
+	// handle ctrl+c to kill
+	killChan := make(chan os.Signal, 1)
+	signal.Notify(killChan, os.Interrupt)
+
+	// Load Config
 	conf, err := config.Load("protocol/787.yaml")
 	if err != nil {
 		fmt.Println(" oops= ", err)
@@ -29,23 +36,25 @@ func main() {
 	}
 	fmt.Println(" conf= ", conf)
 
-	killChan := make(chan os.Signal, 1)
-	signal.Notify(killChan, os.Interrupt)
+
 
 	//= Initialise some local sotre and state
 	state := vstate.NewVState()
 	state.AddNodes(  conf.GetOutputNodes() )
 
 	ias_node := "/instrumentation/airspeed-indicator/indicated-speed-kt"
-	state.AddNode(ias_node)
+	//state.AddNode(ias_node)
+
+	hdg_bug := "/autopilot/settings/heading-bug-deg"
+	state.AddNode(hdg_bug)
 
 	eng_node := "/controls/engines/engine[1]/throttle"
 	state.AddNode(eng_node)
 
 	// initialise Piface
-	board := piio.NewPifaceBoard()
-	board.Init()
-	if board.Enabled == false {
+	pdf_board := piio.NewPifaceBoard()
+	//pdf_board.Init()
+	if pdf_board.Enabled == false {
 		// On a pc with no piface, we fake inputs with timers
 		//board.PretendInputs( conf.DInPins )
 	}
@@ -56,7 +65,8 @@ func main() {
 	go client.Start()
 
 	//timer := time.NewTicker(time.Second)
-	ard_board := ardio.NewArduinoBoard()
+	ard_board := ardio.NewArduinoBoard("ard_1")
+	//ard_board.LoadConfig(conf.FgNodes)
 
 
 	go ard_board.Run()
@@ -73,7 +83,7 @@ func main() {
 			fmt.Println( "killed" )
 			os.Exit(0)
 
-		// Anaolog pin from arduino
+		// Analog pin from arduino
 		case apin := <- ard_board.AnalogChan:
 
 			if last_v != apin.Val {
@@ -84,9 +94,39 @@ func main() {
 				last_v = apin.Val
 			}
 
+		// Encoder pin from arduino
+		case epin := <- ard_board.EncoderChan:
+			fmt.Println("Encoder Chan < ",   epin)
+			chdg_val, enc_val_err := state.GetInt(hdg_bug)
+
+			if enc_val_err == nil {
+				rem := chdg_val % 5
+				hdg_val := chdg_val - rem
+				fmt.Println("   ",   chdg_val,  rem, hdg_val)
+				if(epin.Val == -1){
+
+					hdg_val = hdg_val + 5
+				} else {
+					hdg_val = hdg_val - 5
+				}
+				if(hdg_val > 360){
+					hdg_val = hdg_val - 360
+				}
+				if(hdg_val < 0){
+					hdg_val = hdg_val + 360
+				}
+
+				enc_val := fmt.Sprintf("%v", hdg_val)
+				fmt.Println("encsend=",  hdg_bug, enc_val)
+				client.WsSet(hdg_bug, enc_val)
+
+
+			}
+
 		// Messages from Flightgear
 		case msg := <- client.WsChan:
-			//fmt.Printf("#%s#\n", msg.Node)
+			fmt.Println("", msg.Node, msg.StrValue())
+			state.Update( msg.Node, msg.StrValue() )
 
 			if msg.Node == eng_node {
 				fmt.Println("eng", msg.StrValue() )
@@ -98,14 +138,14 @@ func main() {
 				//num = ParseInt(msg.WayValue)
 			}
 
-			state.Update( msg.Node, msg.StrValue() )
+
 
 			for _, out_p := range conf.DOutPins {
 
 				if out_p.Node == msg.Node {
-					//fmt.Println("        YES = ", led)
+					fmt.Println("        YES = ", msg.Node)
 					on := out_p.IsOn( msg.StrValue() )
-					board.SetOutput(out_p.Pin, on)
+					pdf_board.SetOutput(out_p.Pin, on)
 
 				}
 			}
@@ -113,7 +153,7 @@ func main() {
 
 
 		// Buttons Pressed
-		case inp_ev := <- board.InputChan:
+		case inp_ev := <- pdf_board.InputChan:
 			//fmt.Println(" INNN = ", inp_ev)
 
 			if true  {

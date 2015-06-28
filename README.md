@@ -59,7 +59,10 @@ fgfs Host Machine
 So Far
 =============================
 
-
+# Update 2015-06-27
+  - multiplexed 16 indicators to leds using arduino, 3 pins and 2*595 shift register
+  - rotary encoder to set var
+  - 2 * seven segment with 13 pins !! (hard way)
 
 # Update 2015-06-22
 - The websocket and buttons work

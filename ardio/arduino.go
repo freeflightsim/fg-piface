@@ -6,34 +6,59 @@ import (
 	"bytes"
 	"io"
 	"strconv"
+	"strings"
 	serial "github.com/tarm/goserial"
 	"time"
+
+	//"github.com/freeflightsim/fg-piface/config"
 )
 
 const (
 	NL = 10 // \n character
 )
 
-type AnalogPin struct {
+type AnalogVal struct {
 	Pin int
 	Val int64
 }
-
+type EncoderVal struct {
+	Id int
+	Val int64
+}
+type DOutPin struct {
+	Node string
+	Pin int
+	Val bool
+}
 
 
 type ArduinoBoard struct {
+	BoardId string
 	Serial io.ReadWriteCloser
-	AnalogChan chan AnalogPin
+	AnalogChan chan AnalogVal
+	EncoderChan chan EncoderVal
 	Enabled bool
+	Nodes map[string]bool
 }
 
-func NewArduinoBoard() *ArduinoBoard {
+func NewArduinoBoard(board_id string) *ArduinoBoard {
 	b := new(ArduinoBoard)
-	b.AnalogChan = make(chan AnalogPin)
+	b.BoardId = board_id
+	b.AnalogChan = make(chan AnalogVal)
+	b.EncoderChan = make(chan EncoderVal)
 	b.Enabled = false
+	b.Nodes = make(map[string]bool)
 	return b
 }
 
+/*
+func (me *ArduinoBoard) LoadConfig(conf *config.Config) {
+
+
+
+
+}
+*/
 func (me *ArduinoBoard) Run() {
 
 	// let things catch up
@@ -61,12 +86,28 @@ func (me *ArduinoBoard) Run() {
 			char := buf[:n]
 			if char[0] == NL {
 				s := lbuff.String()
-				i, oops := strconv.ParseInt(s, 10, 64)
-				if oops != nil {
+				//fmt.Println("ard Serial=", s, s[0:2] )
 
-				} else {
-					//fmt.Println( "======", s  )
-					me.AnalogChan <- AnalogPin{Pin: 0, Val: i}
+				if( len(s) > 4 && s[0:3] == "enc"){
+					p := strings.Split(s, "=")
+					v, verr := strconv.ParseInt(p[1], 10, 64)
+					//fmt.Println(" -------l=", p, v, verr)
+					if verr != nil {
+
+					} else {
+						//fmt.Println( "======", s  )
+						me.EncoderChan <- EncoderVal{Id: 0, Val: v}
+					}
+
+				}
+				if(false){
+					i, oops := strconv.ParseInt(s, 10, 64)
+					if oops != nil {
+
+					} else {
+						//fmt.Println( "======", s  )
+						me.AnalogChan <- AnalogVal{Pin: 0, Val: i}
+					}
 				}
 				lbuff.Reset()
 			} else {
