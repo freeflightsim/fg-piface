@@ -1,18 +1,18 @@
 # The idea is to create a set of definitions..
-# and the nodes to lsiten to and send to
+# and the nodes to listen to and send to
 # whether by ws, udp, or telnet, ajax et all
 #
 # So the concept is to define the noted here..
 # and indeed maybe a bit of replication as data already in prop tree
-# and nasal, but this ia working from the micro controller back..
+# and nasal, but this ia working from the micro controller back..Enter one-line summary
 
 -   id: ap
     comment: Autopilot engaged
     node: /instrumentation/flightdirector/autopilot-on
-    toggle: true
-    on: 1
-    off: 0
-
+    light:
+        on: 1
+    button:
+        states: 0,1
 
 -   id: at
     comment: Autothrottle to control engines
@@ -22,11 +22,21 @@
     off: 0
 
 
+-   id: throttle
+    comment: Throttle Setting
+    node: /engine/settings/trottle-pos
+    on: nav1-hold
+
+
+
 -   id: lnav
     comment: Lnav engaged
     node: /instrumentation/flightdirector/lnav
-    on: 3,5
-
+    output:
+        on: 3
+        on: 5
+    button:
+        states: when 3 send 0
 
 -   id: vnav
     comment: VNav engaged
@@ -52,7 +62,6 @@
     comment: Approach (also lnav)
     node: /autopilot/locks/heading
     on: nav1-hold
-
 
 
 

@@ -7,9 +7,6 @@ import (
 	"os/signal"
 	"fmt"
 
-
-
-
 	"github.com/freeflightsim/fg-piface/config"
 	"github.com/freeflightsim/fg-piface/ardio"
 	"github.com/freeflightsim/fg-piface/fgio"
@@ -21,27 +18,27 @@ import (
 
 func main() {
 
-	//TODO, flags for host, port, config.yaml
+	//TODO, flags for host, port, not sure where its gonna go yes, even config
+	//host = flags.Foo("host")
 
-
-	// handle ctrl+c to kill
+	//= Handle ctrl+c to kill on terminal (required as were `multithread`)
 	killChan := make(chan os.Signal, 1)
 	signal.Notify(killChan, os.Interrupt)
 
-	// Load Config
+	//= Load Config (this also loads def in protocol/
 	conf, err := config.Load("protocol/787.yaml")
 	if err != nil {
-		fmt.Println(" oops= ", err)
+		fmt.Println(" Config error= ", err)
 		return
 	}
-	fmt.Println(" conf= ", conf)
+	fmt.Println(" config = ", conf)
 
 
-
-	//= Initialise some local sotre and state
+	//= Initialise the local State store thingi
 	state := vstate.NewVState()
 	state.AddNodes(  conf.GetOutputNodes() )
 
+	// Some custom nodes in dev
 	ias_node := "/instrumentation/airspeed-indicator/indicated-speed-kt"
 	//state.AddNode(ias_node)
 
@@ -51,7 +48,12 @@ func main() {
 	eng_node := "/controls/engines/engine[1]/throttle"
 	state.AddNode(eng_node)
 
-	// initialise Piface
+	//= Initialise the flightgear client(s) later udp
+	fg_client := fgio.NewFgClient("192.168.50.153", "7777")
+	fg_client.AddNodes( state.GetNodes() )
+
+
+	//=  Piface Digital IO board initialisaction (rpi only)
 	pdf_board := piio.NewPifaceBoard()
 	//pdf_board.Init()
 	if pdf_board.Enabled == false {
@@ -59,43 +61,41 @@ func main() {
 		//board.PretendInputs( conf.DInPins )
 	}
 
-	// initialise the websocket client
-	client := fgio.NewFgClient("192.168.50.153", "7777")
-	client.AddNodes( state.GetNodes() )
-	go client.Start()
-
-	//timer := time.NewTicker(time.Second)
-	ard_board := ardio.NewArduinoBoard("ard_1")
+	//= Arduino Board (current dev is Duemilanove .. olde)
+	arduino_1 := ardio.NewArduinoBoard("ard_1")
+	arduino_2 := ardio.NewArduinoBoard("ard_mega_1")
 	//ard_board.LoadConfig(conf.FgNodes)
 
 
-	go ard_board.Run()
+	go fg_client.Start()
+	//go arduino_1.Run()
+	//go arduino_2.Run()
 
 
 	var last_v int64
-	// Loop around the messages from channels
+
+	// Route all messages
 	for {
 		select {
 
-		// ctrl+c to kill
+		//= ctrl+c to kill
 		case  <- killChan:
-
 			fmt.Println( "killed" )
 			os.Exit(0)
 
-		// Analog pin from arduino
-		case apin := <- ard_board.AnalogChan:
+		//= Analog pinInput from arduino
+		case apin := <- arduino_1.AnalogChan:
 
 			if last_v != apin.Val {
 				vs := float64(apin.Val) / 100.0
 				vsf := fmt.Sprintf("%0.2f", vs)
 				fmt.Println("read", apin, vsf)
-				client.WsSet(eng_node, vsf)
+				fg_client.WsSet(eng_node, vsf)
 				last_v = apin.Val
 			}
 
 		// Encoder pin from arduino
-		case epin := <- ard_board.EncoderChan:
+		case epin := <- arduino_1.EncoderChan:
 			fmt.Println("Encoder Chan < ",   epin)
 			chdg_val, enc_val_err := state.GetInt(hdg_bug)
 
@@ -118,13 +118,13 @@ func main() {
 
 				enc_val := fmt.Sprintf("%v", hdg_val)
 				fmt.Println("encsend=",  hdg_bug, enc_val)
-				client.WsSet(hdg_bug, enc_val)
+				fg_client.WsSet(hdg_bug, enc_val)
 
 
 			}
 
 		// Messages from Flightgear
-		case msg := <- client.WsChan:
+		case msg := <- fg_client.WsChan:
 			fmt.Println("", msg.Node, msg.StrValue())
 			state.Update( msg.Node, msg.StrValue() )
 
@@ -134,10 +134,14 @@ func main() {
 
 			if msg.Node == ias_node {
 				fmt.Println("iass", msg.StrValue() )
-				ard_board.SendSerial( msg.StrValue() )
+				arduino_1.SendSerial( msg.StrValue() )
 				//num = ParseInt(msg.WayValue)
 			}
-
+			if msg.Node == ias_node {
+				fmt.Println("iass", msg.StrValue() )
+				arduino_2.SendSerial( msg.StrValue() )
+				//num = ParseInt(msg.WayValue)
+			}
 
 
 			for _, out_p := range conf.DOutPins {
@@ -175,7 +179,7 @@ func main() {
 				}
 				fmt.Println(in_def.Id, "curr=", curr_val, " on=", in_def.On, "off = " , in_def.Off, "send = ",  send_val)
 
-				client.WsSet(in_def.Node, send_val)
+				fg_client.WsSet(in_def.Node, send_val)
 				/*
 				send_val := ip.Off
 				if inp_ev.State == true {
