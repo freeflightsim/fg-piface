@@ -86,6 +86,7 @@ func main() {
 
 		//= Analog pinInput from arduino ?
 		case apin := <- arduino_1.AnalogChan:
+		//case apin := <- arduino_2.AnalogChan:
 
 			if last_v != apin.Val {
 				vs := float64(apin.Val) / 100.0
