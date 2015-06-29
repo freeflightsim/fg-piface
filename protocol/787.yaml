@@ -6,6 +6,10 @@ digital_outputs:
         board: ard_1
         pin: 0
 
+    -   node: ap
+        board: ard_2
+        pin: 6
+
     -   node: at
         board: ard_1
         pin: 1
@@ -17,3 +21,6 @@ digital_outputs:
     -   node: vnav
         board: ard_1
         pin: 3
+
+serial_out:
+    -

@@ -80,10 +80,11 @@ func main() {
 
 		//= ctrl+c to kill
 		case  <- killChan:
+			// TODO gracefully shutdown things
 			fmt.Println( "killed" )
 			os.Exit(0)
 
-		//= Analog pinInput from arduino
+		//= Analog pinInput from arduino ?
 		case apin := <- arduino_1.AnalogChan:
 
 			if last_v != apin.Val {

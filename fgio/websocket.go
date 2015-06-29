@@ -5,20 +5,23 @@ package fgio
 import (
 	"fmt"
 	"encoding/json"
-
+	"net"
 	"golang.org/x/net/websocket"
 )
 
 type Client struct {
 
+	//Enabled bool
 	Host string
 	Port string
 
 	Nodes map[string]bool
 
-	Ws *websocket.Conn
+	WsConn *websocket.Conn
 	WsChan chan MessageFrame
 
+	UdpConn *net.UDPConn
+	UdpChan chan interface{}
 
 }
 
@@ -28,6 +31,7 @@ func NewFgClient(host string, port string) *Client{
 	c := new(Client)
 	c.Host = host
 	c.Port = port
+
 	c.Nodes = make(map[string]bool)
 	c.WsChan = make(chan MessageFrame)
 
@@ -35,7 +39,6 @@ func NewFgClient(host string, port string) *Client{
 }
 
 func (me *Client) Connect() error {
-
 	// keeping adhoc creation of hosts etc in case
 	// we can change ip et all on the fly
 	// TODO make a reconnect on drop !!!..
@@ -43,11 +46,40 @@ func (me *Client) Connect() error {
 	url := "ws://" + me.Host + ":" +  me.Port + "/PropertyListener"
 
 	var err error
-	me.Ws, err = websocket.Dial(url, "", origin)
+	me.WsConn, err = websocket.Dial(url, "", origin)
 	if err != nil {
 		//fmt.Println("fatal", err)
 		return err
 	}
+
+
+	// TODO UDP
+	/*
+	udpAddress, err := net.ResolveUDPAddr("udp", port)
+    if udp_err != udp_err {
+		fmt.Println("error resolving UDP address on ", port)
+		fmt.Println(err)
+		return
+	}
+	conn ,err := net.ListenUDP("udp",udpAddress)
+	*/
+
+	return nil
+}
+
+func (me *Client) WsConnect() error {
+	// keeping adhoc creation of hosts etc in case we can change ip et all on the fly
+	// TODO make a reconnect on drop !!!..
+	origin := "http://" + me.Host + ":" + me.Port
+	url := "ws://" + me.Host + ":" +  me.Port + "/PropertyListener"
+
+	var err error
+	me.WsConn, err = websocket.Dial(url, "", origin)
+	if err != nil {
+		//fmt.Println("fatal", err)
+		return err
+	}
+
 
 	return nil
 }
@@ -60,7 +92,7 @@ func (me *Client) WsListen(){
 	var err error
 	var fra MessageFrame
 	for {
-		n, err = me.Ws.Read(bits)
+		n, err = me.WsConn.Read(bits)
 		if err != nil {
 			fmt.Println("WS Read err", n, err)
 		} else {
@@ -122,13 +154,16 @@ func (me *Client) WsSet(node string, value string) {
 
 func (me *Client) SendCommand(comm interface{}) error {
 	//fmt.Println("SendCommand", comm)
+	if me.WsConn == nil {
+		return nil
+	}
 	bits, err := json.Marshal(comm)
 	if err != nil {
-		fmt.Println("jsonerror", err)
+		fmt.Println("SendCommand.jsonerror", err)
 		return err
 	}
 	//fmt.Println("bits", string(bits))
-	if _, err := me.Ws.Write(bits); err != nil {
+	if _, err := me.WsConn.Write(bits); err != nil {
 		//log.Fatal(err)
 		fmt.Println("written", err)
 	}
